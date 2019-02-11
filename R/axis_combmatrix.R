@@ -200,6 +200,7 @@ make_combination_matrix_plot <- function(labels, labels_split, label_set, range,
       axis.ticks.y = element_blank(),
       axis.ticks.length = unit(0, "pt"),
       axis.title = element_blank(),
+      axis.line = element_blank(),
       panel.border = element_blank()
     )
 }
