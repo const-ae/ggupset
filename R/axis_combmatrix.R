@@ -3,18 +3,20 @@
 #' @import ggplot2
 NULL
 
-#' @import  rlang
-NULL
-
 #' @import grid
 NULL
 
 #' @import gtable
 NULL
 
-#' @import scales
+#' @import rlang
 NULL
 
+#' @import tibble
+NULL
+
+#' @import scales
+NULL
 
 axis_combmatrix <- function(xlim = NULL, ylim = NULL, expand = TRUE, clip = "on",
                             sep="[^[:alnum:]]+", levels=NULL, ytrans="identity") {
@@ -69,17 +71,16 @@ CoordCombMatrix <- ggproto("CoordCombMatrix", CoordTrans,
   },
 
   render_axis_v = function(self, panel_params, theme) {
-    # Copied from coord-.r#L83
-    arrange <- panel_params$y.arrange %||% c("primary", "secondary")
-    vert_axis <- list(
-      left = ggplot2:::render_axis(panel_params, arrange[1], "y", "left", theme),
-      right = ggplot2:::render_axis(panel_params, arrange[2], "y", "right", theme)
-    )
+    vert_axes <- ggproto_parent(CoordTrans, self)$render_axis_v(panel_params, theme)
     if(isTRUE(theme$combmatrix.label.make_space)){
-      vert_axis[["left"]]$width <- max(vert_axis[["left"]]$width, self$comb_axis_label_width)
+      if(inherits(vert_axes[["left"]], "zeroGrob")){
+        # The axis is on the right so I will just create a new axis
+        vert_axes[["left"]] <- absoluteGrob(gList(vert_axes[["left"]]), width=self$comb_axis_label_width)
+      }else{
+        vert_axes[["left"]]$width <- max(vert_axes[["left"]]$width, self$comb_axis_label_width)
+      }
     }
-
-    vert_axis
+    vert_axes
   },
 
 
@@ -100,19 +101,16 @@ render_comb_axis <- function(self, panel_params, axis=c("primary", "secondary"),
     return(zeroGrob())
   }
 
-
-  # browser()
   position <- match.arg(position, c("top", "bottom"))
   axis <- match.arg(axis, c("primary", "secondary"))
   if(axis == "secondary"){
     # Secondary axis not yet implemented
     return(zeroGrob())
   }
-
   one <- unit(1, "npc")
-  line <- ggplot2:::element_render(theme, "axis.line.x.bottom", c(0, 1), c(1, 1), id.lengths = 2)
+  line <- element_render(theme, "axis.line.x.bottom", c(0, 1), c(1, 1), id.lengths = 2)
   nticks <- length(at)
-  ticks <- ggplot2:::element_render(theme, "axis.ticks.x.bottom", x = rep(at, each = 2),
+  ticks <- element_render(theme, "axis.ticks.x.bottom", x = rep(at, each = 2),
                           y = rep(unit.c(one - theme$axis.ticks.length, one), nticks), id.lengths = rep(2, nticks))
 
   labels <- factor(panel_params$x.labels, levels = panel_params$x.labels, ordered=TRUE)
@@ -150,15 +148,15 @@ render_comb_axis <- function(self, panel_params, axis=c("primary", "secondary"),
 
   if(position == "bottom"){
     gt <- gtable_col("axis", grobs = list(ticks, axis_repl),
-                     width = one, height = unit.c(theme$axis.ticks.length, label_height))
+                     width = one, heights = unit.c(theme$axis.ticks.length, label_height))
   }else{
     gt <- gtable_col("axis", grobs = list(axis_repl,ticks),
-                     width = one, height = unit.c(label_height, theme$axis.ticks.length))
+                     width = one, heights = unit.c(label_height, theme$axis.ticks.length))
   }
 
   justvp <- viewport(y = 1, just = "top", height = gtable_height(gt))
 
-  ggplot2:::absoluteGrob(gList(line, gt), width = gtable_width(gt),
+  absoluteGrob(gList(line, gt), width = gtable_width(gt),
                height = gtable_height(gt), vp = justvp)
 
 }
@@ -177,13 +175,13 @@ make_combination_matrix_plot <- function(labels, labels_split, label_set, range,
   }, df2$labels_split, df2$single_label)
   df2$index <- as.numeric(as.factor(df2$single_label))
 
-  plt <- ggplot(df2, aes(x=at, y=single_label))
+  plt <- ggplot(df2, aes(x= .data$at, y= .data$single_label))
   if(isTRUE(theme$combmatrix.panel.striped_background)){
-    plt <- plt + geom_rect(aes(fill=index %% 2 == 0), ymin=df2$index-0.5, ymax=df2$index+0.5, xmin=0, xmax=1)
+    plt <- plt + geom_rect(aes(fill= .data$index %% 2 == 0), ymin=df2$index-0.5, ymax=df2$index+0.5, xmin=0, xmax=1)
   }
   plt +
-    geom_point(aes(color=observed), size=theme$combmatrix.panel.point.size) +
-    geom_line(data=function(dat) dat[dat$observed, ,drop=FALSE], aes(group=labels),
+    geom_point(aes(color= .data$observed), size=theme$combmatrix.panel.point.size) +
+    geom_line(data=function(dat) dat[dat$observed, ,drop=FALSE], aes(group = .data$labels),
               size=theme$combmatrix.panel.line.size) +
     ylab("") +
     scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
@@ -212,6 +210,23 @@ merge_element.unit.list <- function(new, old){
 
 
 
+
+absoluteGrob <- function (grob, width = NULL, height = NULL, xmin = NULL, ymin = NULL,
+          vp = NULL){
+  gTree(children = grob, width = width, height = height, xmin = xmin,
+        ymin = ymin, vp = vp, cl = "absoluteGrob")
+}
+
+element_render <- function (theme, element, ..., name = NULL) {
+  el <- calc_element(element, theme)
+  if (is.null(el)) {
+    message("Theme element ", element, " missing")
+    return(zeroGrob())
+  }
+  grob <- element_grob(el, ...)
+  grob$name <- grobName(grob, paste(element, name, sep = "."))
+  grob
+}
 
 
 
