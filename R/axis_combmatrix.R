@@ -11,3 +11,218 @@ NULL
 
 #' @import gtable
 NULL
+
+#' @import scales
+NULL
+
+
+axis_combmatrix <- function(xlim = NULL, ylim = NULL, expand = TRUE, clip = "on",
+                            sep="[^[:alnum:]]+", levels=NULL, ytrans="identity") {
+  # Copied from coord-transform.R
+  if (is.character(ytrans)) ytrans <- as.trans(ytrans)
+
+  res <- ggproto(NULL, CoordCombMatrix,
+                 trans = list(x=as.trans("identity"), y=ytrans),
+                 limits = list(x = xlim, y = ylim),
+                 expand = expand,
+                 clip = clip,
+                 sep = sep,
+                 levels = levels
+  )
+
+  list(res, theme_combmatrix())
+}
+
+
+
+
+
+
+
+
+
+
+CoordCombMatrix <- ggproto("CoordCombMatrix", CoordTrans,
+
+  setup_params = function(self, data){
+    if(is.function(self$levels)){
+      self$levels <- self$levels(data)
+    }
+    ggproto_parent(CoordTrans, self)$setup_params(data)
+  },
+
+  setup_panel_params = function(self, scales_x, scales_y, params=list()){
+    details <- ggproto_parent(CoordTrans, self)$setup_panel_params(scales_x, scales_y, params)
+    details <- c(details, list(
+      x.arrange = scales_x$axis_order(),  y.arrange = scales_y$axis_order()
+    ))
+    details
+  },
+
+
+  render_axis_h = function(self, panel_params, theme) {
+    arrange <- panel_params$x.arrange %||% c("secondary", "primary")
+    list(
+      top = render_comb_axis(self,  panel_params, arrange[1], "top", theme),
+      bottom = render_comb_axis(self, panel_params, arrange[2], "bottom", theme)
+    )
+  },
+
+  render_axis_v = function(self, panel_params, theme) {
+    # Copied from coord-.r#L83
+    arrange <- panel_params$y.arrange %||% c("primary", "secondary")
+    vert_axis <- list(
+      left = ggplot2:::render_axis(panel_params, arrange[1], "y", "left", theme),
+      right = ggplot2:::render_axis(panel_params, arrange[2], "y", "right", theme)
+    )
+    if(isTRUE(theme$combmatrix.label.make_space)){
+      vert_axis[["left"]]$width <- max(vert_axis[["left"]]$width, self$comb_axis_label_width)
+    }
+
+    vert_axis
+  },
+
+
+  # Parameter used to communicate width between
+  # horizontal and vertical axis render
+  comb_axis_label_width = unit(0, "pt")
+)
+
+
+
+render_comb_axis <- function(self, panel_params, axis=c("primary", "secondary"),
+                             position=c("bottom", "top"), theme){
+  # This block is originally copied from the guide_axis function
+  at <- unit(panel_params[["x.major"]], "native")
+
+  # Easy way out
+  if (length(at) == 0){
+    return(zeroGrob())
+  }
+
+
+  # browser()
+  position <- match.arg(position, c("top", "bottom"))
+  axis <- match.arg(axis, c("primary", "secondary"))
+  if(axis == "secondary"){
+    # Secondary axis not yet implemented
+    return(zeroGrob())
+  }
+
+  one <- unit(1, "npc")
+  line <- ggplot2:::element_render(theme, "axis.line.x.bottom", c(0, 1), c(1, 1), id.lengths = 2)
+  nticks <- length(at)
+  ticks <- ggplot2:::element_render(theme, "axis.ticks.x.bottom", x = rep(at, each = 2),
+                          y = rep(unit.c(one - theme$axis.ticks.length, one), nticks), id.lengths = rep(2, nticks))
+
+  labels <- factor(panel_params$x.labels, levels = panel_params$x.labels, ordered=TRUE)
+  labels_split <- strsplit(panel_params$x.labels, self$sep)
+  if(!is.null(self$levels)){
+    label_set_levels <- rev(self$levels)
+  }else{
+    label_set_levels <- sort(unique(unlist(labels_split)), decreasing = TRUE)
+  }
+  label_set <- factor(label_set_levels, levels=label_set_levels, ordered=TRUE)
+  ggpl <- make_combination_matrix_plot(labels=labels,
+                                labels_split = labels_split,
+                                label_set= label_set,
+                                range=panel_params$x.range,
+                                at = at,
+                                theme=theme)
+
+  label_width <- gtable_width(gtable_filter(ggplotGrob(ggpl), "axis-l"))
+  if(is.null(theme$combmatrix.label.height)){
+    label_height <- unit((calc_element("axis.text.y", theme)$size +
+                            theme$combmatrix.label.extra_spacing) * length(label_set), "pt") +
+      theme$combmatrix.label.total_extra_spacing
+  }else{
+    label_height <- theme$combmatrix.label.height
+  }
+
+  if(is.null(theme$combmatrix.label.width)){
+    self$comb_axis_label_width <- label_width
+  }else{
+    self$comb_axis_label_width <- theme$combmatrix.label.width
+  }
+  ggpl <- ggpl + theme(plot.margin = unit.c(theme$combmatrix.panel.margin[1], unit(0, "pt"),
+                                            theme$combmatrix.panel.margin[2], label_width * -1))
+  axis_repl <- ggplotGrob(ggpl)
+
+  if(position == "bottom"){
+    gt <- gtable_col("axis", grobs = list(ticks, axis_repl),
+                     width = one, height = unit.c(theme$axis.ticks.length, label_height))
+  }else{
+    gt <- gtable_col("axis", grobs = list(axis_repl,ticks),
+                     width = one, height = unit.c(label_height, theme$axis.ticks.length))
+  }
+
+  justvp <- viewport(y = 1, just = "top", height = gtable_height(gt))
+
+  ggplot2:::absoluteGrob(gList(line, gt), width = gtable_width(gt),
+               height = gtable_height(gt), vp = justvp)
+
+}
+
+
+
+make_combination_matrix_plot <- function(labels, labels_split, label_set, range, at, theme){
+
+  df <- tibble(labels, labels_split, at=c(at))
+  df2 <- as.tibble(expand.grid(labels=labels, single_label=label_set, stringsAsFactors = FALSE))
+  df2$id <- seq_len(nrow(df2))
+  df2 <- as.tibble(merge(df2, df, sort=FALSE, by="labels"))
+  df2 <- df2[order(df2$id), ]
+  df2$observed <- mapply(FUN=function(labs, row) {
+    row %in% labs
+  }, df2$labels_split, df2$single_label)
+  df2$index <- as.numeric(as.factor(df2$single_label))
+
+  plt <- ggplot(df2, aes(x=at, y=single_label))
+  if(isTRUE(theme$combmatrix.panel.striped_background)){
+    plt <- plt + geom_rect(aes(fill=index %% 2 == 0), ymin=df2$index-0.5, ymax=df2$index+0.5, xmin=0, xmax=1)
+  }
+  plt +
+    geom_point(aes(color=observed), size=theme$combmatrix.panel.point.size) +
+    geom_line(data=function(dat) dat[dat$observed, ,drop=FALSE], aes(group=labels),
+              size=theme$combmatrix.panel.line.size) +
+    ylab("") +
+    scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
+    scale_y_discrete(breaks=label_set, labels=if(is.null(names(label_set))) waiver() else names(label_set)) +
+    scale_fill_manual(values= c(`TRUE` = theme$combmatrix.panel.striped_background.color.one,
+                                `FALSE` = theme$combmatrix.panel.striped_background.color.two)) +
+    scale_color_manual(values= c(`TRUE` = theme$combmatrix.panel.point.color.fill,
+                                 `FALSE` = theme$combmatrix.panel.point.color.empty)) +
+    guides(color="none", fill="none") +
+    theme(
+      panel.background = element_blank(),
+      axis.text.y = theme$combmatrix.label.text %||% theme$axis.text.y,
+      axis.text.x = element_blank(),
+      axis.ticks.y = element_blank(),
+      axis.ticks.length = unit(0, "pt"),
+      axis.title = element_blank(),
+      panel.border = element_blank()
+    )
+}
+
+
+merge_element.unit.list <- function(new, old){
+  new
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
