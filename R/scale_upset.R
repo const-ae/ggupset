@@ -1,14 +1,16 @@
 
-scale_x_combmatrix <- function(..., expand = waiver(), position = "bottom"){
+scale_x_mergelist <- function(sep="-", ..., expand = waiver(), position = "bottom"){
   sc <- discrete_scale(c("x", "xmin", "xmax", "xend"), "position_d", identity, ...,
-                       expand = expand, guide = "none", position = position, super = ScaleCombMatrix)
+                       expand = expand, guide = "none", position = position, super = ScaleMergeList)
   sc$range_c <- ggplot2:::continuous_range()
+  sc$internal_text_separator <- sep
   sc
 }
 
 
 scale_x_upset <- function(order_by = c("freq", "degree"), n_sets = Inf, n_intersections = Inf,
                           sets = NULL, intersections = NULL, reverse=FALSE,
+                          levels=NULL, ytrans="identity",
                           ..., expand = waiver(), position = "bottom"){
   sc <- discrete_scale(c("x", "xmin", "xmax", "xend"), "position_d", identity, ...,
                expand = expand, guide = "none", position = position, super = ScaleUpset)
@@ -19,13 +21,17 @@ scale_x_upset <- function(order_by = c("freq", "degree"), n_sets = Inf, n_inters
   sc$sets <- sets
   sc$intersections <- intersections
   sc$range_c <- ggplot2:::continuous_range()
-  sc
+  # Some unique separator that does not randomly appear in text data
+  sc$internal_text_separator <- "-__-__-_-"
+
+
+  list(sc, axis_combmatrix(sep = sc$internal_text_separator, levels=levels, ytrans=ytrans))
 }
 
 
-ScaleCombMatrix <- ggproto("ScaleCombMatrix", ScaleDiscretePosition,
+ScaleMergeList <- ggproto("ScaleMergeList", ScaleDiscretePosition,
 
-  internal_text_separator = "-_-_-",
+  internal_text_separator = "-",
 
   train = function(self, x) {
     if(is.list(x)){
@@ -44,12 +50,12 @@ ScaleCombMatrix <- ggproto("ScaleCombMatrix", ScaleDiscretePosition,
     ggproto_parent(ScaleDiscretePosition, self)$map(x, limits)
   }
 
+
 )
 
 
 
-ScaleUpset <- ggproto("ScaleUpset", ScaleCombMatrix,
-   # The
+ScaleUpset <- ggproto("ScaleUpset", ScaleMergeList,
    order_by = "freq",
    n_sets = Inf,
    n_intersections = Inf,
@@ -60,8 +66,29 @@ ScaleUpset <- ggproto("ScaleUpset", ScaleCombMatrix,
    train = function(self, x) {
      if(is.list(x)){
        x <- lapply(x, sort)
+
+       if(self$n_intersections < length(unique(x))){
+         x_tmp <- vapply(x, paste0, collapse=self$internal_text_separator, FUN.VALUE = "")
+         intersections_tmp <- names(sort(table(x_tmp), decreasing=TRUE))[seq_len(self$n_intersections)]
+         self$intersections <- strsplit(intersections_tmp, self$internal_text_separator)
+       }
+       if(! is.null(self$intersections)){
+         x <- lapply(x, function(elem){
+           keep <- any(vapply(self$intersections, function(inter){
+             length(elem) == length(inter) && all(sort(elem) == sort(inter))
+           }, FUN.VALUE= FALSE))
+           if(keep){
+             elem
+           }else{
+             NA
+           }
+         })
+       }
+
+
        if(is.null(self$sets)){
          sets <- unique(unlist(x))
+         sets <- sets[! is.na(sets)]
        }
        sets <- names(sort(table(unlist(x))[sets], decreasing = TRUE))[seq_len(min(length(sets), self$n_sets))]
        sets <- factor(sets, levels=sets, ordered=TRUE)
@@ -91,7 +118,7 @@ ScaleUpset <- ggproto("ScaleUpset", ScaleCombMatrix,
      }else{
        x_string <- x
      }
-     ggproto_parent(ScaleCombMatrix, self)$train(x_string)
+     ggproto_parent(ScaleMergeList, self)$train(x_string)
    },
 
 
@@ -109,7 +136,7 @@ ScaleUpset <- ggproto("ScaleUpset", ScaleCombMatrix,
    },
 
    get_limits = function(self){
-     limits <- ggproto_parent(ScaleDiscretePosition, self)$get_limits()
+     limits <- ggproto_parent(ScaleMergeList, self)$get_limits()
      limits <- limits[! is.na(limits)]
      limits
    }
