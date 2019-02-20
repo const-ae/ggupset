@@ -54,6 +54,17 @@ CoordCombMatrix <- ggproto("CoordCombMatrix", CoordTrans,
   },
 
   setup_panel_params = function(self, scales_x, scales_y, params=list()){
+    if(inherits(scales_x, "ScaleUpset")){
+      if(is.null(self$levels)){
+        self$levels <- factor(scales_x$sets, levels=rev(levels(scales_x$sets)), ordered=TRUE)
+      }else{
+        self$levels <- factor(union(self$levels, as.character(scales_x$sets)),
+               levels=c(levels(scales_x$sets), setdiff(self$levels, as.character(scales_x$sets))),
+               ordered = TRUE)
+      }
+
+      self$sep <- scales_x$internal_text_separator
+    }
     details <- ggproto_parent(CoordTrans, self)$setup_panel_params(scales_x, scales_y, params)
     details <- c(details, list(
       x.arrange = scales_x$axis_order(),  y.arrange = scales_y$axis_order()
