@@ -1,11 +1,13 @@
-Package: ggcombaxis
+Package: ggupset
 Type: Package
-Title: Add a combination matrix axis to ggplots
+Title: Combination matrix axis for 'ggplot2' to create 'UpSet' plots
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Authors@R: person("Constantin", "Ahlmann-Eltze", email = "artjom31415@googlemail.com", role = c("aut", "cre"))
+Description: Replace the standard x-axis in 'ggplots' with a combination matrix
+  to visualize complex set overlaps. UpSet has introduced a new way to visualize
+  the overlap of sets, this package provides a simple way to produce such plots
+  using ggplot. In addition it can convert any categorical axis into a combination
+  matrix axis.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
