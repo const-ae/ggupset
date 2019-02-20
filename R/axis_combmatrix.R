@@ -118,11 +118,23 @@ render_comb_axis <- function(self, panel_params, axis=c("primary", "secondary"),
     # Secondary axis not yet implemented
     return(zeroGrob())
   }
+
+  zero <- unit(0, "npc")
   one <- unit(1, "npc")
-  line <- element_render(theme, "axis.line.x.bottom", c(0, 1), c(1, 1), id.lengths = 2)
+  line <- switch(position,
+     top =    element_render(theme, "axis.line.x.top", c(0, 1), c(0, 0), id.lengths = 2),
+     bottom = element_render(theme, "axis.line.x.bottom", c(0, 1), c(1, 1), id.lengths = 2)
+  )
+
   nticks <- length(at)
-  ticks <- element_render(theme, "axis.ticks.x.bottom", x = rep(at, each = 2),
-                          y = rep(unit.c(one - theme$axis.ticks.length, one), nticks), id.lengths = rep(2, nticks))
+  ticks <- switch(position,
+     top = element_render(theme, "axis.ticks.x.top", x = rep(at, each = 2),
+                          y = rep(unit.c(zero, theme$axis.ticks.length), nticks),
+                          id.lengths = rep(2, nticks)),
+     bottom = element_render(theme, "axis.ticks.x.bottom", x = rep(at, each = 2),
+                             y = rep(unit.c(one - theme$axis.ticks.length, one), nticks),
+                             id.lengths = rep(2, nticks))
+  )
 
   labels <- factor(panel_params$x.labels, levels = panel_params$x.labels, ordered=TRUE)
   labels_split <- strsplit(panel_params$x.labels, self$sep)
@@ -153,22 +165,26 @@ render_comb_axis <- function(self, panel_params, axis=c("primary", "secondary"),
   }else{
     self$comb_axis_label_width <- theme$combmatrix.label.width
   }
-  ggpl <- ggpl + theme(plot.margin = unit.c(theme$combmatrix.panel.margin[1], unit(0, "pt"),
+  ggpl <- ggpl + theme(plot.margin = unit.c(theme$combmatrix.panel.margin[1], zero,
                                             theme$combmatrix.panel.margin[2], label_width * -1))
   axis_repl <- ggplotGrob(ggpl)
 
   if(position == "bottom"){
     gt <- gtable_col("axis", grobs = list(ticks, axis_repl),
                      width = one, heights = unit.c(theme$axis.ticks.length, label_height))
+    justvp <- viewport(y = 1, just = "top", height = gtable_height(gt))
   }else{
     gt <- gtable_col("axis", grobs = list(axis_repl,ticks),
                      width = one, heights = unit.c(label_height, theme$axis.ticks.length))
+    justvp <-  viewport(y = 0, just = "bottom",    height = gtable_height(gt))
   }
 
-  justvp <- viewport(y = 1, just = "top", height = gtable_height(gt))
+
 
   absoluteGrob(gList(line, gt), width = gtable_width(gt),
                height = gtable_height(gt), vp = justvp)
+
+
 
 }
 
