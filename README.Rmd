@@ -121,7 +121,7 @@ tidy_movies %>%
 
 
 One thing that is only possible with the `scale_x_upset()` function is to automatically order
-the categories and genres by `freq`uency or by `degree`.
+the categories and genres by `freq` or by `degree`.
 
 ```{R}
 tidy_movies %>%
@@ -175,7 +175,7 @@ tidy_movies %>%
     scale_x_upset(order_by = "degree", n_sets = 5)
 ```
 
-The `UpSetR` package provides a lot conveint helpers around this kind of plot; the main
+The `UpSetR` package provides a lot convient helpers around this kind of plot; the main
 advantage of my package is that it can be combined with any kind of ggplot
 that uses a categorical x-axis. This additional flexibility can be useful if
 you want to create non-standard plots. The following plot for example shows

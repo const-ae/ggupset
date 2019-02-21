@@ -1,6 +1,6 @@
 Package: ggupset
 Type: Package
-Title: Combination matrix axis for 'ggplot2' to create 'UpSet' plots
+Title: Combination Matrix Axis for 'ggplot2' to Create 'UpSet' Plots
 Version: 0.1.0
 Authors@R: person("Constantin", "Ahlmann-Eltze", email = "artjom31415@googlemail.com", role = c("aut", "cre"))
 Description: Replace the standard x-axis in 'ggplots' with a combination matrix

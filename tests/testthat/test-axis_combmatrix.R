@@ -6,7 +6,7 @@ context("ggupset")
 test_that("Plotting works as expected", {
   library(ggplot2)
   mtcars$comb <- paste0("gears: ", mtcars$gear, "-cyl: ", mtcars$cyl)
-  mtcars$list_col <- purrr::map2(mtcars$gear, mtcars$cyl, ~ c(paste0("gear: ", .x), paste0("cyl: ", .y)))
+  mtcars$list_col <- lapply(seq_len(nrow(mtcars)), function(idx) c(paste0("gear: ", mtcars$gear[idx]), paste0("cyl: ", mtcars$cyl[idx])))
 
   expect_silent(
     ggplot(mtcars, aes(x=comb)) +

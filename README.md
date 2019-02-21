@@ -29,12 +29,12 @@ This is a basic example which shows you how to solve a common problem:
 # Load helper packages
 library(ggplot2)
 library(tidyverse)
-#> ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 #> ✔ tibble  1.4.2     ✔ purrr   0.2.5
 #> ✔ tidyr   0.8.2     ✔ dplyr   0.7.8
 #> ✔ readr   1.2.1     ✔ stringr 1.4.0
 #> ✔ tibble  1.4.2     ✔ forcats 0.3.0
-#> ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 
@@ -139,7 +139,7 @@ tidy_movies %>%
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="70%" />
 
-One thing that is only possible with the `scale_x_upset()` function is to automatically order the categories and genres by `freq`uency or by `degree`.
+One thing that is only possible with the `scale_x_upset()` function is to automatically order the categories and genres by `freq` or by `degree`.
 
 ``` r
 tidy_movies %>%
@@ -203,7 +203,7 @@ tidy_movies %>%
 
 <img src="man/figures/README-unnamed-chunk-9-2.png" width="70%" />
 
-The `UpSetR` package provides a lot conveint helpers around this kind of plot; the main advantage of my package is that it can be combined with any kind of ggplot that uses a categorical x-axis. This additional flexibility can be useful if you want to create non-standard plots. The following plot for example shows when movies of a certain genre were published.
+The `UpSetR` package provides a lot convient helpers around this kind of plot; the main advantage of my package is that it can be combined with any kind of ggplot that uses a categorical x-axis. This additional flexibility can be useful if you want to create non-standard plots. The following plot for example shows when movies of a certain genre were published.
 
 ``` r
 tidy_movies %>%
