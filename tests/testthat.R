@@ -1,4 +1,4 @@
 library(testthat)
-library(ggcombaxis)
+library(ggupset)
 
-test_check("ggcombaxis")
+test_check("ggupset")

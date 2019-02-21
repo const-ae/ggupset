@@ -1,7 +1,7 @@
 
 
 
-context("ggcombaxis")
+context("ggupset")
 
 test_that("Plotting works as expected", {
   mtcars$comb <- paste0("gears: ", mtcars$gear, "-cyl: ", mtcars$cyl)
