@@ -1,4 +1,7 @@
+^CRAN-RELEASE$
 ^data-raw$
 ^README\.Rmd$
+^README-cache
 ^.*\.Rproj$
 ^\.Rproj\.user$
+cran-comments.md

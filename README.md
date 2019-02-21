@@ -174,7 +174,7 @@ tidy_movies %>%
 Alternative Packages
 --------------------
 
-There is already a package called `UpSetR` ([github](https://github.com/hms-dbmi/UpSetR), [CRAN](https://cran.r-project.org/package=UpSetR)) that provides very similar functionality. It produces a similar plot with an additional view that shows the overall size of each genre.
+There is already a package called `UpSetR` ([github](https://github.com/hms-dbmi/UpSetR), [CRAN](https://cran.r-project.org/package=UpSetR)) that provides very similar functionality and that heavily inspired me to write this package. It produces a similar plot with an additional view that shows the overall size of each genre.
 
 ``` r
 

@@ -21,7 +21,7 @@
 tidy_movies
 }
 \description{
-The original \code{\link[ggplot2movies]{movies}} dataset has 7 columns that
+The original \code{ggplot2movies::movies} dataset has 7 columns that
 contain indicators if a movies belongs to a certain genre. In this version
 the 7 columns are collapsed to a single list column to create a tidy
 dataset. It also has information on only 5,000 movies to reduce the size
