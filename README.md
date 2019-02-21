@@ -174,7 +174,7 @@ tidy_movies %>%
 Alternative Packages
 --------------------
 
-There is already a package called `UpSetR` ([github](https://github.com/hms-dbmi/UpSetR), [CRAN](https://cran.r-project.org/package=UpSetR)) that provides very similar functionality and that heavily inspired me to write this package. It produces a similar plot with an additional view that shows the overall size of each genre.
+There is already a package called `UpSetR` ([GitHub](https://github.com/hms-dbmi/UpSetR), [CRAN](https://cran.r-project.org/package=UpSetR)) that provides very similar functionality and that heavily inspired me to write this package. It produces a similar plot with an additional view that shows the overall size of each genre.
 
 ``` r
 
@@ -203,7 +203,7 @@ tidy_movies %>%
 
 <img src="man/figures/README-unnamed-chunk-9-2.png" width="70%" />
 
-The `UpSetR` package provides a lot convient helpers around this kind of plot; the main advantage of my package is that it can be combined with any kind of ggplot that uses a categorical x-axis. This additional flexibility can be useful if you want to create non-standard plots. The following plot for example shows when movies of a certain genre were published.
+The `UpSetR` package provides a lot convenient helpers around this kind of plot; the main advantage of my package is that it can be combined with any kind of ggplot that uses a categorical x-axis. This additional flexibility can be useful if you want to create non-standard plots. The following plot for example shows when movies of a certain genre were published.
 
 ``` r
 tidy_movies %>%

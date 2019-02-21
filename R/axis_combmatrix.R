@@ -23,7 +23,7 @@ NULL
 #' Convert delimited text labels into a combination matrix axis
 #'
 #' The function splits the text based on the \code{sep} argument and
-#' views each occuring element as potential set.
+#' views each occurring element as potential set.
 #'
 #' Technically the function appends a \code{coord} system to the ggplot object.
 #' To maintain compatibility additional arguments like \code{ytrans},

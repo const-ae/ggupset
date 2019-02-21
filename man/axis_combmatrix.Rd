@@ -28,7 +28,7 @@ in the text labels are used}
 }
 \description{
 The function splits the text based on the \code{sep} argument and
-views each occuring element as potential set.
+views each occurring element as potential set.
 }
 \details{
 Technically the function appends a \code{coord} system to the ggplot object.
