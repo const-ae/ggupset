@@ -18,6 +18,9 @@ NULL
 #' @import scales
 NULL
 
+
+
+#' @export
 axis_combmatrix <- function(xlim = NULL, ylim = NULL, expand = TRUE, clip = "on",
                             sep="[^[:alnum:]]+", levels=NULL, ytrans="identity") {
   # Copied from coord-transform.R
@@ -230,7 +233,7 @@ make_combination_matrix_plot <- function(labels, labels_split, label_set, range,
     )
 }
 
-
+#' @export
 merge_element.unit.list <- function(new, old){
   new
 }

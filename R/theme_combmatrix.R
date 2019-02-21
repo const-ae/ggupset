@@ -1,3 +1,4 @@
+#' @export
 theme_combmatrix <- function(
   combmatrix.label.make_space = TRUE,
   combmatrix.label.width = NULL,

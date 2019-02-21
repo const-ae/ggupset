@@ -1,4 +1,5 @@
 
+#' @export
 scale_x_mergelist <- function(sep="-", ..., expand = waiver(), position = "bottom"){
   sc <- discrete_scale(c("x", "xmin", "xmax", "xend"), "position_d", identity, ...,
                        expand = expand, guide = "none", position = position, super = ScaleMergeList)
@@ -7,7 +8,7 @@ scale_x_mergelist <- function(sep="-", ..., expand = waiver(), position = "botto
   sc
 }
 
-
+#' @export
 scale_x_upset <- function(order_by = c("freq", "degree"), n_sets = Inf, n_intersections = Inf,
                           sets = NULL, intersections = NULL, reverse=FALSE,
                           levels=NULL, ytrans="identity",
@@ -89,17 +90,18 @@ ScaleUpset <- ggproto("ScaleUpset", ScaleMergeList,
        if(is.null(self$sets)){
          sets <- unique(unlist(x))
          sets <- sets[! is.na(sets)]
+       }else{
+         sets <- self$sets
        }
        sets <- names(sort(table(unlist(x))[sets], decreasing = TRUE))[seq_len(min(length(sets), self$n_sets))]
        sets <- factor(sets, levels=sets, ordered=TRUE)
 
        self$sets <- sets
 
-       to_delete <- vapply(x, function(elem) !any(elem %in% levels(sets)), FUN.VALUE = FALSE)
+       to_delete <- vapply(x, function(elem) length(elem) > 0 && !any(elem %in% levels(sets)), FUN.VALUE = FALSE)
        x <- lapply(x, function(elem) elem[elem %in% levels(sets)])
        x_string <- vapply(x, paste0, collapse=self$internal_text_separator, FUN.VALUE = "")
        x_string[to_delete] <- NA
-       # browser()
 
        if(self$order_by == "freq"){
          levels <- names(sort(table(x_string), decreasing = !self$reverse))
@@ -125,7 +127,7 @@ ScaleUpset <- ggproto("ScaleUpset", ScaleMergeList,
    map = function(self, x, limits = self$get_limits()) {
      if(is.list(x)){
        x <- lapply(x, sort)
-       to_delete <- vapply(x, function(elem) !any(elem %in% levels(self$sets)), FUN.VALUE = FALSE)
+       to_delete <- vapply(x, function(elem) length(elem) > 0 && !any(elem %in% levels(self$sets)), FUN.VALUE = FALSE)
        x <- lapply(x, function(elem) elem[elem %in% levels(self$sets)])
        x_string <- vapply(x, paste0, collapse=self$internal_text_separator, FUN.VALUE = "")
        x_string[to_delete] <- NA
