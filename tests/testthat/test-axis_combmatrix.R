@@ -4,6 +4,7 @@
 context("ggupset")
 
 test_that("Plotting works as expected", {
+  library(ggplot2)
   mtcars$comb <- paste0("gears: ", mtcars$gear, "-cyl: ", mtcars$cyl)
   mtcars$list_col <- purrr::map2(mtcars$gear, mtcars$cyl, ~ c(paste0("gear: ", .x), paste0("cyl: ", .y)))
 
@@ -47,7 +48,7 @@ test_that("Plotting works as expected", {
 
   ggplot(mtcars, aes(x=list_col)) +
     geom_bar() +
-    scale_x_upset(n_intersections = 5, levels=c(paste0("gear: ", c(3,4,5)), paste0("cyl: ", c(4,6,8,9))))
+    scale_x_upset(n_intersections = 5, sets=c(paste0("gear: ", c(3,4,5)), paste0("cyl: ", c(4,6,8,9))))
 
 })
 

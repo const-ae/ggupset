@@ -20,9 +20,40 @@ NULL
 
 
 
+#' Convert delimited text labels into a combination matrix axis
+#'
+#' The function splits the text based on the \code{sep} argument and
+#' views each occuring element as potential set.
+#'
+#' Technically the function appends a \code{coord} system to the ggplot object.
+#' To maintain compatibility additional arguments like \code{ytrans},
+#' \code{ylim}, and \code{clip} are forwarded to \code{coord_trans()}.
+#'
+#' @param sep The separator that is used to split the string labels. Can be a
+#'   regex. Default: \code{"[^[:alnum:]]+"}
+#' @param levels The selection of string elements that are displayed in the
+#'   combination matrix axis. Default: NULL, which means simply all elements
+#'   in the text labels are used
+#' @param xlim,ylim The limits fort the x and y axes
+#' @param expand Boolean with the same effect as in
+#'   \code{ggplot2::coord_cartesian()}. Default: TRUE
+#' @param clip String with the same effect as in
+#'   \code{ggplot2::coord_cartesian()}. Default: "on"
+#' @param ytrans transformers for y axis. For more information see
+#'   \code{ggplot2::coord_trans()}. Default: "identity"
+#'
+#' @examples
+#'   library(ggplot2)
+#'   mtcars$combined <- paste0("Cyl: ", mtcars$cyl, "_Gears: ", mtcars$gear)
+#'   head(mtcars)
+#'   ggplot(mtcars, aes(x=combined)) +
+#'     geom_bar() +
+#'     axis_combmatrix(sep = "_")
+#'
 #' @export
-axis_combmatrix <- function(xlim = NULL, ylim = NULL, expand = TRUE, clip = "on",
-                            sep="[^[:alnum:]]+", levels=NULL, ytrans="identity") {
+axis_combmatrix <- function(sep="[^[:alnum:]]+", levels=NULL, xlim = NULL,
+                            ylim = NULL, expand = TRUE, clip = "on",
+                            ytrans="identity") {
   # Copied from coord-transform.R
   if (is.character(ytrans)) ytrans <- as.trans(ytrans)
 
@@ -168,6 +199,7 @@ render_comb_axis <- function(self, panel_params, axis=c("primary", "secondary"),
   }else{
     self$comb_axis_label_width <- theme$combmatrix.label.width
   }
+
   ggpl <- ggpl + theme(plot.margin = unit.c(theme$combmatrix.panel.margin[1], zero,
                                             theme$combmatrix.panel.margin[2], label_width * -1))
   axis_repl <- ggplotGrob(ggpl)

@@ -1,27 +1,79 @@
 
+#' Merge list columns into character vectors
+#'
+#' The function handles list columns by collapsing them into delimited strings
+#' using the \code{sep} argument. This is useful to show sets and in combination
+#' with the \code{axis_combmatrix()} function.
+#'
+#' @param sep String the is used to delimit the elements in each list entry.
+#'   Default: "-".
+#' @param ... additional arguments that are passed on to
+#'   \code{ggplot2::scale_discrete}
+#' @param position either "top" or "bottom" to specify where the
+#'   x axis drawn. Default: "bottom"
+#'
 #' @export
-scale_x_mergelist <- function(sep="-", ..., expand = waiver(), position = "bottom"){
+scale_x_mergelist <- function(sep="-", ..., position = "bottom"){
   sc <- discrete_scale(c("x", "xmin", "xmax", "xend"), "position_d", identity, ...,
-                       expand = expand, guide = "none", position = position, super = ScaleMergeList)
-  sc$range_c <- ggplot2:::continuous_range()
+                       guide = "none", position = position, super = ScaleMergeList)
+  sc2 <- scale_x_discrete(position = position, ...)
+  sc$range_c <- sc2$range_c
   sc$internal_text_separator <- sep
   sc
+
 }
 
+#' Scale to make UpSet plots
+#'
+#' This function takes a list column and turns it into a combination matrix
+#' axis. It internally wraps the call to \code{scale_x_mergelist()} and
+#' \code{axis_combmatrix()} and makes sure that the elements are sorted by
+#' size.
+#'
+#' @param order_by either "freq" or "degree". Default: "freq"
+#' @param n_sets maximum number of sets that are displayed. Default: Inf
+#' @param n_intersections maximum number of intersections that are
+#'   displayed. Default: Inf
+#' @param sets character vector that specifies which sets are displayed
+#' @param intersections a list of character vectors that specifies which
+#'   intersections are displayed
+#' @param reverse boolean if the order of the intersections is reversed.
+#'   Default: FALSE
+#' @param ytrans transformers for y axis. For more information see
+#'   \code{axis_combmatrix()}. Default: "identity"
+#' @param position either "top" or "bottom" to specify where the
+#'   combination matrix is drawn. Default: "bottom"
+#' @param ... additional parameters for \code{ggplot2::discrete_scale()}
+#'
+#' @examples
+#' library(ggplot2)
+#' ggplot(tidy_movies, aes(x=Genres)) +
+#'   geom_bar() +
+#'   scale_x_upset(reverse = TRUE, sets=c("Drama", "Action"))
+#'
+#'  ggplot(tidy_movies, aes(x=Genres)) +
+#'    geom_bar() +
+#'    scale_x_upset(n_intersections = 5, ytrans="sqrt")
+#'
+#'  ggplot(tidy_movies, aes(x=Genres, y=year)) +
+#'    geom_boxplot() +
+#'    scale_x_upset(intersections = list(c("Drama", "Comedy"), c("Short"), c("Short", "Animation")),
+#'                  sets = c("Drama", "Comedy", "Short", "Animation", "Horror"))
 #' @export
 scale_x_upset <- function(order_by = c("freq", "degree"), n_sets = Inf, n_intersections = Inf,
                           sets = NULL, intersections = NULL, reverse=FALSE,
-                          levels=NULL, ytrans="identity",
-                          ..., expand = waiver(), position = "bottom"){
+                          ytrans="identity", ..., position = "bottom"){
   sc <- discrete_scale(c("x", "xmin", "xmax", "xend"), "position_d", identity, ...,
-               expand = expand, guide = "none", position = position, super = ScaleUpset)
+               guide = "none", position = position, super = ScaleUpset)
   order_by <- match.arg(order_by,  c("freq", "degree"))
   sc$order_by <- order_by
   sc$n_sets <- n_sets
   sc$n_intersections <- n_intersections
   sc$sets <- sets
   sc$intersections <- intersections
-  sc$range_c <- ggplot2:::continuous_range()
+  sc$reverse <- reverse
+  sc2 <- scale_x_discrete(position = position, ...)
+  sc$range_c <- sc2$range_c
   # Some unique separator that does not randomly appear in text data
   sc$internal_text_separator <- "-__-__-_-"
 
@@ -114,14 +166,16 @@ ScaleUpset <- ggproto("ScaleUpset", ScaleMergeList,
          })
        }
 
-
        if(is.null(self$sets)){
          sets <- unique(unlist(x))
          sets <- sets[! is.na(sets)]
+         add_sets <- character(0)
        }else{
-         sets <- self$sets
+         sets <- intersect(self$sets, unique(unlist(x)))
+         add_sets <- setdiff(self$sets, unique(unlist(x)))
        }
-       sets <- names(sort(table(unlist(x))[sets], decreasing = TRUE))[seq_len(min(length(sets), self$n_sets))]
+       sets <- names(sort(table(unlist(x))[sets], decreasing = TRUE))
+       sets <- c(sets, add_sets)[seq_len(min(length(sets) + length(add_sets), self$n_sets))]
        sets <- factor(sets, levels=sets, ordered=TRUE)
 
        self$sets <- sets
