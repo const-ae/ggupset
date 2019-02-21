@@ -52,77 +52,77 @@ test_that("Plotting works as expected", {
 })
 
 
-test_that("Test for skipping", {
-  skip("Ignore")
-  library(tidyverse)
-
-  starwars %>%
-    ggplot(aes(x=films)) +
-    geom_bar() +
-    scale_x_upset() +
-    axis_combmatrix(sep = "-_-_-")
-
-  starwars %>%
-    mutate(films_col = map_chr(films, paste0, collapse="-")) %>%
-    ggplot(aes(x=films)) +
-    geom_bar() +
-    axis_combmatrix(sep = "-")
-
-
-  starwars %>%
-    mutate(films_col = map_chr(films, paste0, collapse="-")) %>%
-    ggplot(aes(x=films_col, y=height)) +
-    geom_boxplot() +
-    axis_combmatrix(sep = "-") +
-    # theme(axis.text.x = element_text(angle = 90))
-    NULL
-
-})
-
-
-
-test_that("Test for skipping 2", {
-  skip("Ignore")
-
-  library(ggplot2movies)
-  library(tidyverse)
-  tidy_movies <- movies %>%
-    mutate(id = 1:n()) %>%
-    gather(Genre, GenreMember, Action:Short) %>%
-    filter(GenreMember == 1) %>%
-    select(- GenreMember) %>%
-    group_by_at(vars(-Genre)) %>%
-    summarize(Genres = list(Genre)) %>%
-    ungroup()
-
-
-  tidy_movies %>%
-    ggplot(aes(x=Genres)) +
-      geom_bar() +
-      scale_x_upset(n_intersections = 10)
-
-  tidy_movies %>%
-    sample_n(1000) %>%
-    ggplot(aes(x=Genres)) +
-    geom_bar() +
-    scale_x_upset(n_intersections = 10)
-
-  tidy_movies %>%
-    sample_n(1000) %>%
-    ggplot(aes(x=Genres, y=year)) +
-    # geom_violin() +
-    geom_boxplot() +
-    scale_x_upset()
-
-  tidy_movies %>%
-    # sample_n(1000) %>%
-    mutate(Genres_col = map_chr(Genres, ~ paste0(sort(.x), collapse="-"))) %>%
-    mutate(Genres_col = fct_infreq(as.factor(Genres_col))) %>%
-    mutate(Genres_col = fct_lump(Genres_col, n=12)) %>%
-    ggplot(aes(x=Genres_col, y=year)) +
-      geom_violin() +
-      # geom_jitter(width = 0.1, height=0, size=0.01) +
-      # axis_combmatrix(sep="-", levels = c("Drama", "Comedy", "Short", "Documentary", "Action", "Romance"))
-      NULL
-
-})
+# test_that("Test for skipping", {
+#   skip("Ignore")
+#   library(tidyverse)
+#
+#   starwars %>%
+#     ggplot(aes(x=films)) +
+#     geom_bar() +
+#     scale_x_upset() +
+#     axis_combmatrix(sep = "-_-_-")
+#
+#   starwars %>%
+#     mutate(films_col = map_chr(films, paste0, collapse="-")) %>%
+#     ggplot(aes(x=films)) +
+#     geom_bar() +
+#     axis_combmatrix(sep = "-")
+#
+#
+#   starwars %>%
+#     mutate(films_col = map_chr(films, paste0, collapse="-")) %>%
+#     ggplot(aes(x=films_col, y=height)) +
+#     geom_boxplot() +
+#     axis_combmatrix(sep = "-") +
+#     # theme(axis.text.x = element_text(angle = 90))
+#     NULL
+#
+# })
+#
+#
+#
+# test_that("Test for skipping 2", {
+#   skip("Ignore")
+#
+#   library(ggplot2movies)
+#   library(tidyverse)
+#   tidy_movies <- movies %>%
+#     mutate(id = 1:n()) %>%
+#     gather(Genre, GenreMember, Action:Short) %>%
+#     filter(GenreMember == 1) %>%
+#     select(- GenreMember) %>%
+#     group_by_at(vars(-Genre)) %>%
+#     summarize(Genres = list(Genre)) %>%
+#     ungroup()
+#
+#
+#   tidy_movies %>%
+#     ggplot(aes(x=Genres)) +
+#       geom_bar() +
+#       scale_x_upset(n_intersections = 10)
+#
+#   tidy_movies %>%
+#     sample_n(1000) %>%
+#     ggplot(aes(x=Genres)) +
+#     geom_bar() +
+#     scale_x_upset(n_intersections = 10)
+#
+#   tidy_movies %>%
+#     sample_n(1000) %>%
+#     ggplot(aes(x=Genres, y=year)) +
+#     # geom_violin() +
+#     geom_boxplot() +
+#     scale_x_upset()
+#
+#   tidy_movies %>%
+#     # sample_n(1000) %>%
+#     mutate(Genres_col = map_chr(Genres, ~ paste0(sort(.x), collapse="-"))) %>%
+#     mutate(Genres_col = fct_infreq(as.factor(Genres_col))) %>%
+#     mutate(Genres_col = fct_lump(Genres_col, n=12)) %>%
+#     ggplot(aes(x=Genres_col, y=year)) +
+#       geom_violin() +
+#       # geom_jitter(width = 0.1, height=0, size=0.01) +
+#       axis_combmatrix(sep="-", levels = c("Drama", "Comedy", "Short", "Documentary", "Action", "Romance"))
+#       NULL
+#
+# })
