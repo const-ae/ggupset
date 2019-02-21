@@ -34,21 +34,49 @@ ScaleMergeList <- ggproto("ScaleMergeList", ScaleDiscretePosition,
 
   internal_text_separator = "-",
 
-  train = function(self, x) {
-    if(is.list(x)){
-      x <- lapply(x, sort)
-      x <- vapply(x, paste0, collapse=self$internal_text_separator, FUN.VALUE = "")
+  # train = function(self, x) {
+  #   # browser()
+  #   print("In train")
+  #   # if(is.list(x)){
+  #   #   x <- collapse_list(self, x)
+  #   # }
+  #   ggproto_parent(ScaleDiscretePosition, self)$train(x)
+  # },
+
+
+  # map = function(self, x, limits = self$get_limits()) {
+  #   # browser()
+  #   print("In map")
+  #   # if(is.list(x)){
+  #   #   x <- collapse_list(self, x)
+  #   # }
+  #   ggproto_parent(ScaleDiscretePosition, self)$map(x, limits)
+  # },
+
+  # map_df = function(self, df, i = NULL){
+  #   print("In map_df")
+  #   ggproto_parent(ScaleDiscretePosition, self)$map_df(df, i)
+  # },
+
+  transform_df = function(self, df) {
+    # browser()
+    # print("In transform_df")
+    old_res <- ggproto_parent(ScaleDiscretePosition, self)$transform_df(df)
+    if("group" %in% colnames(df) && is.list(df$x) && all(df$group == -1)){
+      # If the grouping is not set correctly, because it is a list column
+      # adapt that one manually
+      new_group <- as.numeric(as.factor(old_res$x))
+      c(old_res, list(group = new_group))
+    }else{
+      old_res
     }
-    ggproto_parent(ScaleDiscretePosition, self)$train(x)
   },
-
-
-  map = function(self, x, limits = self$get_limits()) {
+  transform = function(self, x){
+    # print("In transform")
     if(is.list(x)){
-      x <- lapply(x, sort)
-      x <- vapply(x, paste0, collapse=self$internal_text_separator, FUN.VALUE = "")
+      x <- collapse_list(self, x)
     }
-    ggproto_parent(ScaleDiscretePosition, self)$map(x, limits)
+    ggproto_parent(ScaleDiscretePosition, self)$transform(x)
   }
 
 
@@ -64,7 +92,7 @@ ScaleUpset <- ggproto("ScaleUpset", ScaleMergeList,
    intersections = NULL,
    reverse=FALSE,
 
-   train = function(self, x) {
+   transform = function(self, x) {
      if(is.list(x)){
        x <- lapply(x, sort)
 
@@ -120,22 +148,22 @@ ScaleUpset <- ggproto("ScaleUpset", ScaleMergeList,
      }else{
        x_string <- x
      }
-     ggproto_parent(ScaleMergeList, self)$train(x_string)
+     ggproto_parent(ScaleMergeList, self)$transform(x_string)
    },
 
 
-   map = function(self, x, limits = self$get_limits()) {
-     if(is.list(x)){
-       x <- lapply(x, sort)
-       to_delete <- vapply(x, function(elem) length(elem) > 0 && !any(elem %in% levels(self$sets)), FUN.VALUE = FALSE)
-       x <- lapply(x, function(elem) elem[elem %in% levels(self$sets)])
-       x_string <- vapply(x, paste0, collapse=self$internal_text_separator, FUN.VALUE = "")
-       x_string[to_delete] <- NA
-     }else{
-       x_string <- x
-     }
-     ggproto_parent(ScaleDiscretePosition, self)$map(x_string, limits)
-   },
+   # map = function(self, x, limits = self$get_limits()) {
+   #   if(is.list(x)){
+   #     x <- lapply(x, sort)
+   #     to_delete <- vapply(x, function(elem) length(elem) > 0 && !any(elem %in% levels(self$sets)), FUN.VALUE = FALSE)
+   #     x <- lapply(x, function(elem) elem[elem %in% levels(self$sets)])
+   #     x_string <- vapply(x, paste0, collapse=self$internal_text_separator, FUN.VALUE = "")
+   #     x_string[to_delete] <- NA
+   #   }else{
+   #     x_string <- x
+   #   }
+   #   ggproto_parent(ScaleDiscretePosition, self)$map(x_string, limits)
+   # },
 
    get_limits = function(self){
      limits <- ggproto_parent(ScaleMergeList, self)$get_limits()
@@ -144,3 +172,11 @@ ScaleUpset <- ggproto("ScaleUpset", ScaleMergeList,
    }
 
 )
+
+
+
+
+collapse_list <- function(self, x){
+  x <- lapply(x, sort)
+  vapply(x, paste0, collapse=self$internal_text_separator, FUN.VALUE = "")
+}
