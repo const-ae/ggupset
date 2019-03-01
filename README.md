@@ -13,8 +13,8 @@ Installation
 You can install the released version of ggupset from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
-# Package not yet on CRAN
-# install.packages("ggupset")
+# Download package from CRAN
+install.packages("ggupset")
 
 # Or get the latest version directly from GitHub
 devtools::install_github("const-ae/ggupset")
@@ -29,12 +29,12 @@ This is a basic example which shows you how to solve a common problem:
 # Load helper packages
 library(ggplot2)
 library(tidyverse)
-#> ── Attaching packages ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ── Attaching packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 #> ✔ tibble  1.4.2     ✔ purrr   0.2.5
 #> ✔ tidyr   0.8.2     ✔ dplyr   0.7.8
 #> ✔ readr   1.2.1     ✔ stringr 1.4.0
 #> ✔ tibble  1.4.2     ✔ forcats 0.3.0
-#> ── Conflicts ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 
@@ -249,7 +249,7 @@ df_complex_conditions %>%
     geom_jitter(aes(color=KO), width=0.1) +
     geom_smooth(method = "lm", aes(group = paste0(KO, "-", DrugA))) +
     scale_x_upset(order_by = "degree",
-                  levels=c("KO", "WT", "Drug", "8h", "24h", "48h"),
+                  sets = c("KO", "WT", "Drug", "8h", "24h", "48h"),
                   position="top", name = "") +
     theme_combmatrix(combmatrix.label.text = element_text(size=12),
                      combmatrix.label.extra_spacing = 5)

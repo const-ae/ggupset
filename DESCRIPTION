@@ -6,9 +6,10 @@ URL: https://github.com/const-ae/ggupset
 BugReports: https://github.com/const-ae/ggupset/issues
 Authors@R: person("Constantin", "Ahlmann-Eltze", email = "artjom31415@googlemail.com", role = c("aut", "cre"))
 Description: Replace the standard x-axis in 'ggplots' with a combination matrix
-  to visualize complex set overlaps. UpSet has introduced a new way to visualize
-  the overlap of sets, this package provides a simple way to produce such plots
-  using ggplot. In addition it can convert any categorical axis into a combination
+  to visualize complex set overlaps. 'UpSet' has introduced a new way to visualize
+  the overlap of sets as an alternative to Venn diagrams. 
+  This package provides a simple way to produce such plots using 'ggplot2'. 
+  In addition it can convert any categorical axis into a combination
   matrix axis.
 License: GPL-3
 Encoding: UTF-8

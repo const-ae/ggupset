@@ -1,4 +1,14 @@
 
+## Resubmission
+This is a resubmission in this version I have:
+
+* Put single quotes around 'ggplot2' and 'UpSet'
+
+* Added examples to the documentation of `scale_x_mergelist()` and 
+ `theme_combmatrix()`
+
+* Added more automatic tests
+
 ## Test environments
 
 * linux ubuntu: r 3.5.2
