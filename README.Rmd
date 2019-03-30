@@ -71,8 +71,62 @@ tidy_movies %>%
     scale_x_upset(n_intersections = 20)
 ```
 
-`scale_x_upset` is a neat function that does several things at once to create a useful x-axis.
-I will now step by step recreate the plot to demonstrate some of the underlying ideas.
+
+## Reshaping quadratic data
+
+Often enough the raw data you are starting with is not in such a neat tidy
+shape. But that is a prerequisite to make such `ggupset` plots, so how can you get
+from wide dataset to a useful one? And how to actually create a `list`-column, anyway?
+
+Imagine we measured for a set of genes if they are a member of certain pathway. 
+A gene can be a member of multiple pathways and we want to see which pathways
+have a large overlap. Unfortunately, we didn't record the data in a tidy format
+but as a simple matrix.
+
+A ficitional dataset of this type is provided as `gene_pathway_membership` variable
+
+```{r}
+data("gene_pathway_membership")
+gene_pathway_membership[, 1:7]
+```
+
+
+We will now turn first turn this matrix into a tidy tibble and then plot it
+
+```{r}
+tidy_pathway_member <- gene_pathway_membership %>%
+  as_tibble(rownames = "Pathway") %>%
+  gather(Gene, Member, -Pathway) %>%
+  filter(Member) %>%
+  select(- Member)
+
+tidy_pathway_member
+```
+
+`tidy_pathway_member` is already a very good starting point for plotting with 
+`ggplot`. But we care about the genes that are members of multiple pathways so
+we will aggregate the data by `Gene` and create a `list`-column with the `Pathway`
+information.
+
+```{r}
+tidy_pathway_member %>%
+  group_by(Gene) %>%
+  summarize(Pathways = list(Pathway))
+```
+
+
+```{r}
+tidy_pathway_member %>%
+  group_by(Gene) %>%
+  summarize(Pathways = list(Pathway)) %>%
+  ggplot(aes(x = Pathways)) +
+    geom_bar() +
+    scale_x_upset()
+```
+
+
+
+## What if I need more flexibility?
 
 The first important idea is to realize that a list column is just as good as a character
 vector with the list elements collapsed

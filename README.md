@@ -29,12 +29,12 @@ This is a basic example which shows you how to solve a common problem:
 # Load helper packages
 library(ggplot2)
 library(tidyverse)
-#> ── Attaching packages ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
+#> ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──
 #> ✔ tibble  1.4.2     ✔ purrr   0.2.5
 #> ✔ tidyr   0.8.2     ✔ dplyr   0.7.8
 #> ✔ readr   1.2.1     ✔ stringr 1.4.0
 #> ✔ tibble  1.4.2     ✔ forcats 0.3.0
-#> ── Conflicts ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> ✖ dplyr::filter() masks stats::filter()
 #> ✖ dplyr::lag()    masks stats::lag()
 
@@ -75,7 +75,88 @@ tidy_movies %>%
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="70%" />
 
-`scale_x_upset` is a neat function that does several things at once to create a useful x-axis. I will now step by step recreate the plot to demonstrate some of the underlying ideas.
+Reshaping quadratic data
+------------------------
+
+Often enough the raw data you are starting with is not in such a neat tidy shape. But that is a prerequisite to make such `ggupset` plots, so how can you get from wide dataset to a useful one? And how to actually create a `list`-column, anyway?
+
+Imagine we measured for a set of genes if they are a member of certain pathway. A gene can be a member of multiple pathways and we want to see which pathways have a large overlap. Unfortunately, we didn't record the data in a tidy format but as a simple matrix.
+
+A ficitional dataset of this type is provided as `gene_pathway_membership` variable
+
+``` r
+data("gene_pathway_membership")
+gene_pathway_membership[, 1:7]
+#>                                Aco1  Aco2  Aif1 Alox8   Amh Bmpr1b Cdc25a
+#> Actin dependent Cell Motility FALSE FALSE FALSE FALSE FALSE  FALSE  FALSE
+#> Chemokine Secretion            TRUE FALSE  TRUE  TRUE FALSE  FALSE  FALSE
+#> Citric Acid Cycle              TRUE  TRUE FALSE FALSE FALSE  FALSE  FALSE
+#> Mammalian Oogenesis           FALSE FALSE FALSE FALSE  TRUE   TRUE  FALSE
+#> Meiotic Cell Cycle            FALSE FALSE FALSE FALSE FALSE  FALSE   TRUE
+#> Neuronal Apoptosis            FALSE FALSE FALSE FALSE FALSE  FALSE  FALSE
+```
+
+We will now turn first turn this matrix into a tidy tibble and then plot it
+
+``` r
+tidy_pathway_member <- gene_pathway_membership %>%
+  as_tibble(rownames = "Pathway") %>%
+  gather(Gene, Member, -Pathway) %>%
+  filter(Member) %>%
+  select(- Member)
+
+tidy_pathway_member
+#> # A tibble: 44 x 2
+#>    Pathway             Gene  
+#>    <chr>               <chr> 
+#>  1 Chemokine Secretion Aco1  
+#>  2 Citric Acid Cycle   Aco1  
+#>  3 Citric Acid Cycle   Aco2  
+#>  4 Chemokine Secretion Aif1  
+#>  5 Chemokine Secretion Alox8 
+#>  6 Mammalian Oogenesis Amh   
+#>  7 Mammalian Oogenesis Bmpr1b
+#>  8 Meiotic Cell Cycle  Cdc25a
+#>  9 Meiotic Cell Cycle  Cdc25c
+#> 10 Chemokine Secretion Chia1 
+#> # ... with 34 more rows
+```
+
+`tidy_pathway_member` is already a very good starting point for plotting with `ggplot`. But we care about the genes that are members of multiple pathways so we will aggregate the data by `Gene` and create a `list`-column with the `Pathway` information.
+
+``` r
+tidy_pathway_member %>%
+  group_by(Gene) %>%
+  summarize(Pathways = list(Pathway))
+#> # A tibble: 37 x 2
+#>    Gene   Pathways 
+#>    <chr>  <list>   
+#>  1 Aco1   <chr [2]>
+#>  2 Aco2   <chr [1]>
+#>  3 Aif1   <chr [1]>
+#>  4 Alox8  <chr [1]>
+#>  5 Amh    <chr [1]>
+#>  6 Bmpr1b <chr [1]>
+#>  7 Cdc25a <chr [1]>
+#>  8 Cdc25c <chr [1]>
+#>  9 Chia1  <chr [1]>
+#> 10 Csf1r  <chr [1]>
+#> # ... with 27 more rows
+```
+
+``` r
+tidy_pathway_member %>%
+  group_by(Gene) %>%
+  summarize(Pathways = list(Pathway)) %>%
+  ggplot(aes(x = Pathways)) +
+    geom_bar() +
+    scale_x_upset()
+```
+
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="70%" />
+
+What if I need more flexibility?
+--------------------------------
 
 The first important idea is to realize that a list column is just as good as a character vector with the list elements collapsed
 
@@ -111,7 +192,7 @@ tidy_movies %>%
     theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.5))
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-8-1.png" width="70%" />
 
 Because the process of collapsing list columns into delimited strings is fairly generic, I provide a new scale that does this automatically (`scale_x_mergelist()`).
 
@@ -124,7 +205,7 @@ tidy_movies %>%
     theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.5))
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="70%" />
 
 But the problem is that it can be difficult to read those labels. Instead I provide a third function that replaces the axis labels with a combination matrix (`axis_combmatrix()`).
 
@@ -137,7 +218,7 @@ tidy_movies %>%
     axis_combmatrix(sep = "-")
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="70%" />
 
 One thing that is only possible with the `scale_x_upset()` function is to automatically order the categories and genres by `freq` or by `degree`.
 
@@ -150,7 +231,7 @@ tidy_movies %>%
 #> Warning: Removed 1076 rows containing non-finite values (stat_count).
 ```
 
-<img src="man/figures/README-unnamed-chunk-7-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="70%" />
 
 Styling
 -------
@@ -169,7 +250,7 @@ tidy_movies %>%
 #> Warning: Removed 1076 rows containing non-finite values (stat_count).
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="70%" />
 
 Alternative Packages
 --------------------
@@ -188,7 +269,7 @@ tidy_movies %>%
   UpSetR::upset(sets = c("Action", "Romance", "Short", "Comedy", "Drama"), keep.order = TRUE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="70%" />
 
 ``` r
 
@@ -201,7 +282,7 @@ tidy_movies %>%
 #> Warning: Removed 1311 rows containing non-finite values (stat_count).
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-2.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-13-2.png" width="70%" />
 
 The `UpSetR` package provides a lot convenient helpers around this kind of plot; the main advantage of my package is that it can be combined with any kind of ggplot that uses a categorical x-axis. This additional flexibility can be useful if you want to create non-standard plots. The following plot for example shows when movies of a certain genre were published.
 
@@ -255,7 +336,7 @@ df_complex_conditions %>%
                      combmatrix.label.extra_spacing = 5)
 ```
 
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="70%" />
 
 #### 2. Aggregation of information
 
@@ -300,4 +381,4 @@ ggplot(avg_rating, aes(x=Genres_collapsed, y=stars, fill=percent_rating)) +
     scale_fill_viridis_c()
 ```
 
-<img src="man/figures/README-unnamed-chunk-11-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="70%" />
