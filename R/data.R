@@ -47,3 +47,22 @@
 #' head(df_complex_conditions)
 #'
 "df_complex_conditions"
+
+
+
+
+
+
+
+#' A fictional dataset describing which genes belong to certain pathways
+#'
+#' @format a matrix with 6 rows and 37 columns. Each row is one pathway, with
+#'   its name given as `rownames` and each column is a gene. The values
+#'   in the matrix are Boolean indicators if the gene is a member of the pathway.
+#'
+#'
+#' @examples
+#' dim(gene_pathway_membership)
+#' gene_pathway_membership[, 1:15]
+"gene_pathway_membership"
+
