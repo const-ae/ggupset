@@ -10,7 +10,7 @@ Plot a combination matrix instead of the standard x-axis and create UpSet plots 
 Installation
 ------------
 
-You can install the released version of ggupset from [CRAN](https://cran.r-project.org/web/packages/ggupset/index.html) with:
+You can install the released version of ggupset from [CRAN](https://cran.r-project.org/package=ggupset) with:
 
 ``` r
 # Download package from CRAN
