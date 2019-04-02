@@ -183,14 +183,12 @@ ScaleUpset <- ggproto("ScaleUpset", ScaleMergeList,
        if(is.null(self$sets)){
          sets <- unique(unlist(x))
          sets <- sets[! is.na(sets)]
-         add_sets <- character(0)
          # Only sort sets if they are not set by user
          sets <- names(sort(table(unlist(x))[sets], decreasing = TRUE))
        }else{
          sets <- intersect(self$sets, unique(unlist(x)))
-         add_sets <- setdiff(self$sets, unique(unlist(x)))
        }
-       sets <- c(sets, add_sets)[seq_len(min(length(sets) + length(add_sets), self$n_sets))]
+       sets <- sets[seq_len(min(length(sets), self$n_sets))]
        sets <- factor(sets, levels=sets, ordered=TRUE)
 
        self$sets <- sets
