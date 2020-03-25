@@ -178,6 +178,11 @@ render_comb_axis <- function(self, panel_params, axis=c("primary", "secondary"),
     label_set_levels <- sort(unique(unlist(labels_split)), decreasing = TRUE)
   }
   label_set <- factor(label_set_levels, levels=label_set_levels, ordered=TRUE)
+  # Add missing values to theme
+  default <- theme_combmatrix()
+  for(item in setdiff(names(default), names(theme))){
+    theme[[item]] <- default[[item]]
+  }
   ggpl <- make_combination_matrix_plot(labels=labels,
                                 labels_split = labels_split,
                                 label_set= label_set,
