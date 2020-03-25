@@ -40,7 +40,7 @@ This is a basic example which shows you how to solve a common problem:
 ```{r example}
 # Load helper packages
 library(ggplot2)
-library(tidyverse)
+library(tidyverse, warn.conflicts = FALSE)
 
 # Load my package
 library(ggupset)
@@ -217,9 +217,9 @@ of each genre.
 # UpSetR
 tidy_movies %>%
   distinct(title, year, length, .keep_all=TRUE) %>%
-  unnest() %>%
+  unnest(cols = Genres) %>%
   mutate(GenreMember=1) %>%
-  spread(Genres, GenreMember, fill=0) %>%
+  pivot_wider(names_from = Genres, values_from = GenreMember, values_fill = list(GenreMember = 0)) %>%
   as.data.frame() %>%
   UpSetR::upset(sets = c("Action", "Romance", "Short", "Comedy", "Drama"), keep.order = TRUE)
 
@@ -297,7 +297,7 @@ avg_rating
 # the red lines indicate the average rating per genre
 ggplot(avg_rating, aes(x=Genres_collapsed, y=stars, fill=percent_rating)) +
     geom_tile() +
-    stat_summary_bin(aes(y=percent_rating * stars), fun.y = sum,  geom="point", 
+    stat_summary_bin(aes(y=percent_rating * stars), fun = sum,  geom="point", 
                      shape="—", color="red", size=6) +
     axis_combmatrix(sep = "-", levels = c("Drama", "Comedy", "Short", 
                     "Documentary", "Action", "Romance", "Animation", "Other")) +
@@ -307,6 +307,11 @@ ggplot(avg_rating, aes(x=Genres_collapsed, y=stars, fill=percent_rating)) +
 
 
 
+## Session Info
+
+```{r}
+sessionInfo()
+```
 
 
 
