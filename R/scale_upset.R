@@ -141,6 +141,9 @@ ScaleMergeList <- ggproto("ScaleMergeList", ScaleDiscretePosition,
     # print("In transform")
     if(is.list(x)){
       x <- collapse_list(self, x)
+    }else{
+      stop("Error in scale_x_mergelist. Aesthetic 'x' must be of type list. It currently is: ",
+           paste0(class(x), collapse = ", "))
     }
     ggproto_parent(ScaleDiscretePosition, self)$transform(x)
   }
@@ -213,7 +216,8 @@ ScaleUpset <- ggproto("ScaleUpset", ScaleMergeList,
        }
        x_string <- factor(x_string, levels = levels, ordered=TRUE)
      }else{
-       x_string <- x
+       stop("Error in scale_upset for aesthetic 'x'. 'x' must be of type list. It currently is: ",
+            paste0(class(LETTERS), collapse = ", "))
      }
      ggproto_parent(ScaleMergeList, self)$transform(x_string)
    },
