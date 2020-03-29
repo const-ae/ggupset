@@ -4,9 +4,17 @@
 \alias{scale_x_upset}
 \title{Scale to make UpSet plots}
 \usage{
-scale_x_upset(order_by = c("freq", "degree"), n_sets = Inf,
-  n_intersections = Inf, sets = NULL, intersections = NULL,
-  reverse = FALSE, ytrans = "identity", ..., position = "bottom")
+scale_x_upset(
+  order_by = c("freq", "degree"),
+  n_sets = Inf,
+  n_intersections = Inf,
+  sets = NULL,
+  intersections = NULL,
+  reverse = FALSE,
+  ytrans = "identity",
+  ...,
+  position = "bottom"
+)
 }
 \arguments{
 \item{order_by}{either "freq" or "degree". Default: "freq"}

@@ -4,17 +4,23 @@
 \alias{theme_combmatrix}
 \title{Theme for the combination matrix}
 \usage{
-theme_combmatrix(combmatrix.label.make_space = TRUE,
-  combmatrix.label.width = NULL, combmatrix.label.height = NULL,
+theme_combmatrix(
+  combmatrix.label.make_space = TRUE,
+  combmatrix.label.width = NULL,
+  combmatrix.label.height = NULL,
   combmatrix.label.extra_spacing = 3,
   combmatrix.label.total_extra_spacing = unit(10, "pt"),
-  combmatrix.label.text = NULL, combmatrix.panel.margin = unit(c(1.5,
-  1.5), "pt"), combmatrix.panel.striped_background = TRUE,
+  combmatrix.label.text = NULL,
+  combmatrix.panel.margin = unit(c(1.5, 1.5), "pt"),
+  combmatrix.panel.striped_background = TRUE,
   combmatrix.panel.striped_background.color.one = "white",
   combmatrix.panel.striped_background.color.two = "#F7F7F7",
-  combmatrix.panel.point.size = 3, combmatrix.panel.line.size = 1.2,
+  combmatrix.panel.point.size = 3,
+  combmatrix.panel.line.size = 1.2,
   combmatrix.panel.point.color.fill = "black",
-  combmatrix.panel.point.color.empty = "#E0E0E0", ...)
+  combmatrix.panel.point.color.empty = "#E0E0E0",
+  ...
+)
 }
 \arguments{
 \item{combmatrix.label.make_space}{Boolean indicator if the y-axis label
