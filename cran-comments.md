@@ -1,7 +1,7 @@
 
 ## Submission: new version
 
-In this release, I have fixed two bugs related to non-default themes in ggplot.
+This is a bug fix release to improve interop with ggplot2 v3.3.0
 
 ## R CMD check results
 
