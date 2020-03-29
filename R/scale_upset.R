@@ -29,7 +29,7 @@
 #' @export
 scale_x_mergelist <- function(sep="-", ..., position = "bottom"){
   sc <- discrete_scale(c("x", "xmin", "xmax", "xend"), "position_d", identity, ...,
-                       guide = "none", position = position, super = ScaleMergeList)
+                       guide = ggplot2::waiver(), position = position, super = ScaleMergeList)
   sc2 <- scale_x_discrete(position = position, ...)
   sc$range_c <- sc2$range_c
   sc$internal_text_separator <- sep
@@ -78,7 +78,7 @@ scale_x_upset <- function(order_by = c("freq", "degree"), n_sets = Inf, n_inters
                           sets = NULL, intersections = NULL, reverse=FALSE,
                           ytrans="identity", ..., position = "bottom"){
   sc <- discrete_scale(c("x", "xmin", "xmax", "xend"), "position_d", identity, ...,
-               guide = "none", position = position, super = ScaleUpset)
+               guide = ggplot2::waiver(), position = position, super = ScaleUpset)
   order_by <- match.arg(order_by,  c("freq", "degree"))
   sc$order_by <- order_by
   sc$n_sets <- n_sets
