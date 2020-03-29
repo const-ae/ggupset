@@ -4,8 +4,15 @@
 \alias{axis_combmatrix}
 \title{Convert delimited text labels into a combination matrix axis}
 \usage{
-axis_combmatrix(sep = "[^[:alnum:]]+", levels = NULL, xlim = NULL,
-  ylim = NULL, expand = TRUE, clip = "on", ytrans = "identity")
+axis_combmatrix(
+  sep = "[^[:alnum:]]+",
+  levels = NULL,
+  xlim = NULL,
+  ylim = NULL,
+  expand = TRUE,
+  clip = "on",
+  ytrans = "identity"
+)
 }
 \arguments{
 \item{sep}{The separator that is used to split the string labels. Can be a
@@ -34,6 +41,14 @@ views each occurring element as potential set.
 Technically the function appends a \code{coord} system to the ggplot object.
 To maintain compatibility additional arguments like \code{ytrans},
 \code{ylim}, and \code{clip} are forwarded to \code{coord_trans()}.
+
+\emph{Note:} make sure that the argument to the 'x' aesthetic is
+  character vector that contains the \code{sep} sequence. The only
+  exception is if \code{axis_combmatrix()} is combined with a
+  \code{scale_x_mergelist()}. This pattern works because in the
+  first step \code{scale_x_mergelist()} turns a list argument
+  to 'x' into a character vector that \code{axis_combmatrix()}
+  can work with.
 }
 \examples{
   library(ggplot2)
