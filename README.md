@@ -29,12 +29,12 @@ This is a basic example which shows you how to solve a common problem:
 # Load helper packages
 library(ggplot2)
 library(tidyverse, warn.conflicts = FALSE)
-#> ── Attaching packages ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+#> ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
 #> ✓ tibble  2.1.3     ✓ dplyr   0.8.4
 #> ✓ tidyr   1.0.2     ✓ stringr 1.4.0
 #> ✓ readr   1.3.1     ✓ forcats 0.4.0
 #> ✓ purrr   0.3.3
-#> ── Conflicts ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 
@@ -450,9 +450,9 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#>  [1] ggupset_0.1.0.9000 forcats_0.4.0      stringr_1.4.0      dplyr_0.8.4       
-#>  [5] purrr_0.3.3        readr_1.3.1        tidyr_1.0.2        tibble_2.1.3      
-#>  [9] tidyverse_1.3.0    ggplot2_3.3.0     
+#>  [1] ggupset_0.2.1   forcats_0.4.0   stringr_1.4.0   dplyr_0.8.4    
+#>  [5] purrr_0.3.3     readr_1.3.1     tidyr_1.0.2     tibble_2.1.3   
+#>  [9] tidyverse_1.3.0 ggplot2_3.3.0  
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] Rcpp_1.0.3        lubridate_1.7.4   lattice_0.20-38   assertthat_0.2.1 
