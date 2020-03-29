@@ -219,7 +219,9 @@ ScaleUpset <- ggproto("ScaleUpset", ScaleMergeList,
        stop("Error in scale_upset for aesthetic 'x'. 'x' must be of type list. It currently is: ",
             paste0(class(LETTERS), collapse = ", "))
      }
-     ggproto_parent(ScaleMergeList, self)$transform(x_string)
+     # Cannot call this anymore because this one must be a list
+     # ggproto_parent(ScaleMergeList, self)$transform(x_string)
+     x_string
    },
 
 
