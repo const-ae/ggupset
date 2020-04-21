@@ -241,9 +241,9 @@ render_comb_axis <- function(self, panel_params, axis=c("primary", "secondary"),
 make_combination_matrix_plot <- function(labels, labels_split, label_set, range, at, theme){
 
   df <- tibble(labels, labels_split, at=c(at))
-  df2 <- as.tibble(expand.grid(labels=labels, single_label=label_set, stringsAsFactors = FALSE))
+  df2 <- as_tibble(expand.grid(labels=labels, single_label=label_set, stringsAsFactors = FALSE))
   df2$id <- seq_len(nrow(df2))
-  df2 <- as.tibble(merge(df2, df, sort=FALSE, by="labels"))
+  df2 <- as_tibble(merge(df2, df, sort=FALSE, by="labels"))
   df2 <- df2[order(df2$id), ]
   df2$observed <- mapply(FUN=function(labs, row) {
     row %in% labs
