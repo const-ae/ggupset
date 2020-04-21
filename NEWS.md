@@ -1,3 +1,7 @@
+# devel
+
+* Remove deprecated `as.tibble()` call (thanks to @abichat)
+
 # v0.2.1
 
 * Better error messages (#9)
