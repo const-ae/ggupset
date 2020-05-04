@@ -254,8 +254,6 @@ make_combination_matrix_plot <- function(labels, labels_split, label_set, range,
   if(isTRUE(theme$combmatrix.panel.striped_background)){
     plt <- plt + geom_rect(aes(fill= .data$index %% 2 == 0), ymin=df2$index-0.5, ymax=df2$index+0.5, xmin=0, xmax=1)
   }
-  if (!isTRUE(theme$combmatrix.panel.line.size == 0)) {
-  }
 
   plt <- plt +
     geom_point(aes(color= .data$observed), size=theme$combmatrix.panel.point.size)
