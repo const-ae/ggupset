@@ -254,10 +254,19 @@ make_combination_matrix_plot <- function(labels, labels_split, label_set, range,
   if(isTRUE(theme$combmatrix.panel.striped_background)){
     plt <- plt + geom_rect(aes(fill= .data$index %% 2 == 0), ymin=df2$index-0.5, ymax=df2$index+0.5, xmin=0, xmax=1)
   }
+
+  plt <- plt +
+    geom_point(aes(color= .data$observed), size=theme$combmatrix.panel.point.size)
+  if (!isTRUE(theme$combmatrix.panel.line.size == 0)) {
+    # If combmatrix.panel.line.size is not a single number equal to 0, add the
+    # lines. (ifFALSE is available starting in v3.5)
+    plt <- plt + geom_line(
+      data=function(dat) dat[dat$observed, ,drop=FALSE],
+      aes(group = .data$labels),
+      size=theme$combmatrix.panel.line.size
+    )
+  }
   plt +
-    geom_point(aes(color= .data$observed), size=theme$combmatrix.panel.point.size) +
-    geom_line(data=function(dat) dat[dat$observed, ,drop=FALSE], aes(group = .data$labels),
-              size=theme$combmatrix.panel.line.size) +
     ylab("") + xlab("") +
     scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
     scale_y_discrete(breaks=label_set, labels=if(is.null(names(label_set))) waiver() else names(label_set)) +
@@ -303,18 +312,3 @@ element_render <- function (theme, element, ..., name = NULL) {
   grob$name <- grobName(grob, paste(element, name, sep = "."))
   grob
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

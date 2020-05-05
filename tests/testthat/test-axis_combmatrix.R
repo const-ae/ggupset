@@ -49,6 +49,11 @@ test_that("Plotting works as expected", {
     ggplot(mtcars, aes(x=list_col)) +
       geom_bar() +
       scale_x_upset(n_intersections = 5, sets=c(paste0("gear: ", c(3,4,5)), paste0("cyl: ", c(4,6,8,9))))
+
+    ggplot(mtcars, aes(x=list_col)) +
+      geom_bar() +
+      scale_x_upset(n_intersections = 5) +
+      theme_combmatrix(combmatrix.panel.line.size = 0)
   })
 })
 

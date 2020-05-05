@@ -1,6 +1,8 @@
 # devel
 
 * Remove deprecated `as.tibble()` call (thanks to @abichat)
+* Removed lines that remained in pdf output with `combmatrix.panel.line.size = 0`
+(issue #12)
 
 # v0.2.1
 
