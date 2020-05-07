@@ -45,24 +45,24 @@ test_that("Plotting works as expected", {
   p <- ggplot(mtcars, aes(x=list_col)) +
     geom_bar() +
     scale_x_upset(intersections = list(c("gear: 3", "cyl: 8"), c("gear: 4", "cyl: 4"), c("cyl: 4", "gear: 3")))
-  expect_silent(ggplot_build(p))
+  ggplot_build(p)
 
 
   p <- ggplot(mtcars, aes(x=list_col)) +
     geom_bar() +
     scale_x_upset(n_intersections = 5)
-  expect_silent(ggplot_build(p))
+  ggplot_build(p)
 
   p <- ggplot(mtcars, aes(x=list_col)) +
     geom_bar() +
     scale_x_upset(n_intersections = 5, sets=c(paste0("gear: ", c(3,4,5)), paste0("cyl: ", c(4,6,8,9))))
-  expect_silent(ggplot_build(p))
+  ggplot_build(p)
 
   p <- ggplot(mtcars, aes(x=list_col)) +
     geom_bar() +
     scale_x_upset(n_intersections = 5) +
     theme_combmatrix(combmatrix.panel.line.size = 0)
-  expect_silent(ggplot_build(p))
+  ggplot_build(p)
 })
 
 
@@ -71,12 +71,12 @@ test_that("Plotting with tidy_movies works as expected 2", {
   p <- ggplot(tidy_movies[1:100, ], aes(x=Genres)) +
     geom_bar() +
     scale_x_upset(n_intersections = 10)
-  expect_silent(ggplot_build(p))
+  ggplot_build(p)
 
   p <- ggplot(tidy_movies[1:100, ], aes(x=Genres)) +
     geom_bar() +
     scale_x_upset(n_intersections = 10)
-  expect_silent(ggplot_build(p))
+  ggplot_build(p)
 
   p <- ggplot(tidy_movies[1:100, ], aes(x=Genres, y=year)) +
     geom_violin() +
