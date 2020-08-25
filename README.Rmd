@@ -71,6 +71,22 @@ tidy_movies %>%
     scale_x_upset(n_intersections = 20)
 ```
 
+## Adding Numbers on top
+
+The best feature about `ggupset` is that it plays well with existing tricks from `ggplot2`. For example, you can easily add the size of the counts on top of the bars with this trick from [stackoverflow](https://stackoverflow.com/a/26556180/604854)
+
+```{r}
+tidy_movies %>%
+  distinct(title, year, length, .keep_all=TRUE) %>%
+  ggplot(aes(x=Genres)) +
+    geom_bar() +
+    geom_text(stat='count', aes(label=after_stat(count)), vjust=-1) +
+    scale_x_upset(n_intersections = 20) +
+    scale_y_continuous(breaks = NULL, lim = c(0, 1350), name = "")
+```
+
+
+
 
 ## Reshaping quadratic data
 

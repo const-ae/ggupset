@@ -29,12 +29,12 @@ This is a basic example which shows you how to solve a common problem:
 # Load helper packages
 library(ggplot2)
 library(tidyverse, warn.conflicts = FALSE)
-#> ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
-#> ✓ tibble  2.1.3     ✓ dplyr   0.8.4
+#> ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+#> ✓ tibble  3.0.1     ✓ dplyr   1.0.0
 #> ✓ tidyr   1.0.2     ✓ stringr 1.4.0
-#> ✓ readr   1.3.1     ✓ forcats 0.4.0
-#> ✓ purrr   0.3.3
-#> ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+#> ✓ readr   1.3.1     ✓ forcats 0.5.0
+#> ✓ purrr   0.3.4
+#> ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
 
@@ -69,7 +69,7 @@ tidy_movies
 `ggupset` makes it easy to get an immediate impression how many movies
 are in each genre and their combination. For example there are slightly
 more than 1200 Dramas in the set, more than 1000 which don’t belong to
-any genre and ~170 that are Comedy and Drama.
+any genre and \~170 that are Comedy and Drama.
 
 ``` r
 tidy_movies %>%
@@ -81,6 +81,28 @@ tidy_movies %>%
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="70%" />
+
+## Adding Numbers on top
+
+The best feature about `ggupset` is that it plays well with existing
+tricks from `ggplot2`. For example, you can easily add the size of the
+counts on top of the bars with this trick from
+[stackoverflow](https://stackoverflow.com/a/26556180/604854)
+
+``` r
+tidy_movies %>%
+  distinct(title, year, length, .keep_all=TRUE) %>%
+  ggplot(aes(x=Genres)) +
+    geom_bar() +
+    geom_text(stat='count', aes(label=after_stat(count)), vjust=-1) +
+    scale_x_upset(n_intersections = 20) +
+    scale_y_continuous(breaks = NULL, lim = c(0, 1350), name = "")
+#> Warning: Removed 100 rows containing non-finite values (stat_count).
+
+#> Warning: Removed 100 rows containing non-finite values (stat_count).
+```
+
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="70%" />
 
 ## Reshaping quadratic data
 
@@ -145,6 +167,7 @@ pathways so we will aggregate the data by `Gene` and create a
 tidy_pathway_member %>%
   group_by(Gene) %>%
   summarize(Pathways = list(Pathway))
+#> `summarise()` ungrouping output (override with `.groups` argument)
 #> # A tibble: 37 x 2
 #>    Gene   Pathways 
 #>    <chr>  <list>   
@@ -168,9 +191,10 @@ tidy_pathway_member %>%
   ggplot(aes(x = Pathways)) +
     geom_bar() +
     scale_x_upset()
+#> `summarise()` ungrouping output (override with `.groups` argument)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" width="70%" />
 
 ## What if I need more flexibility?
 
@@ -209,7 +233,7 @@ tidy_movies %>%
     theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.5))
 ```
 
-<img src="man/figures/README-unnamed-chunk-8-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="70%" />
 
 Because the process of collapsing list columns into delimited strings is
 fairly generic, I provide a new scale that does this automatically
@@ -224,7 +248,7 @@ tidy_movies %>%
     theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.5))
 ```
 
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-10-1.png" width="70%" />
 
 But the problem is that it can be difficult to read those labels.
 Instead I provide a third function that replaces the axis labels with a
@@ -239,7 +263,7 @@ tidy_movies %>%
     axis_combmatrix(sep = "-")
 ```
 
-<img src="man/figures/README-unnamed-chunk-10-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-11-1.png" width="70%" />
 
 One thing that is only possible with the `scale_x_upset()` function is
 to automatically order the categories and genres by `freq` or by
@@ -254,7 +278,7 @@ tidy_movies %>%
 #> Warning: Removed 1076 rows containing non-finite values (stat_count).
 ```
 
-<img src="man/figures/README-unnamed-chunk-11-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-12-1.png" width="70%" />
 
 ## Styling
 
@@ -275,7 +299,7 @@ tidy_movies %>%
 #> Warning: Removed 1076 rows containing non-finite values (stat_count).
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="70%" />
 
 ## Alternative Packages
 
@@ -298,7 +322,7 @@ tidy_movies %>%
   UpSetR::upset(sets = c("Action", "Romance", "Short", "Comedy", "Drama"), keep.order = TRUE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="70%" />
 
 ``` r
 
@@ -311,7 +335,7 @@ tidy_movies %>%
 #> Warning: Removed 1311 rows containing non-finite values (stat_count).
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-2.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-14-2.png" width="70%" />
 
 The `UpSetR` package provides a lot convenient helpers around this kind
 of plot; the main advantage of my package is that it can be combined
@@ -382,7 +406,7 @@ df_complex_conditions %>%
 #> length(ids)): longer object length is not a multiple of shorter object length
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="70%" />
 
 #### 2\. Aggregation of information
 
@@ -400,6 +424,7 @@ avg_rating <- tidy_movies %>%
   group_by(Genres_collapsed) %>%
   mutate(percent_rating = percent_rating / sum(percent_rating)) %>%
   arrange(Genres_collapsed)
+#> `summarise()` regrouping output by 'stars' (override with `.groups` argument)
 
 avg_rating
 #> # A tibble: 130 x 3
@@ -429,19 +454,19 @@ ggplot(avg_rating, aes(x=Genres_collapsed, y=stars, fill=percent_rating)) +
     scale_fill_viridis_c()
 ```
 
-<img src="man/figures/README-unnamed-chunk-15-1.png" width="70%" />
+<img src="man/figures/README-unnamed-chunk-16-1.png" width="70%" />
 
 ## Session Info
 
 ``` r
 sessionInfo()
-#> R version 3.6.2 (2019-12-12)
-#> Platform: x86_64-apple-darwin15.6.0 (64-bit)
+#> R version 4.0.0 Patched (2020-05-04 r78358)
+#> Platform: x86_64-apple-darwin17.0 (64-bit)
 #> Running under: macOS Mojave 10.14.6
 #> 
 #> Matrix products: default
-#> BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
-#> LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
+#> BLAS:   /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRblas.dylib
+#> LAPACK: /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRlapack.dylib
 #> 
 #> locale:
 #> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -450,25 +475,25 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#>  [1] ggupset_0.2.1   forcats_0.4.0   stringr_1.4.0   dplyr_0.8.4    
-#>  [5] purrr_0.3.3     readr_1.3.1     tidyr_1.0.2     tibble_2.1.3   
+#>  [1] ggupset_0.3.0   forcats_0.5.0   stringr_1.4.0   dplyr_1.0.0    
+#>  [5] purrr_0.3.4     readr_1.3.1     tidyr_1.0.2     tibble_3.0.1   
 #>  [9] tidyverse_1.3.0 ggplot2_3.3.0  
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] Rcpp_1.0.3        lubridate_1.7.4   lattice_0.20-38   assertthat_0.2.1 
-#>  [5] digest_0.6.23     utf8_1.1.4        R6_2.4.1          cellranger_1.1.0 
-#>  [9] plyr_1.8.5        backports_1.1.5   reprex_0.3.0      evaluate_0.14    
-#> [13] httr_1.4.1        pillar_1.4.3      rlang_0.4.4       readxl_1.3.1     
+#>  [1] Rcpp_1.0.4.6      lubridate_1.7.8   lattice_0.20-41   assertthat_0.2.1 
+#>  [5] digest_0.6.25     utf8_1.1.4        R6_2.4.1          cellranger_1.1.0 
+#>  [9] plyr_1.8.6        backports_1.1.6   reprex_0.3.0      evaluate_0.14    
+#> [13] httr_1.4.1        pillar_1.4.4      rlang_0.4.6       readxl_1.3.1     
 #> [17] rstudioapi_0.11   Matrix_1.2-18     rmarkdown_2.1     labeling_0.3     
-#> [21] splines_3.6.2     munsell_0.5.0     broom_0.5.4       compiler_3.6.2   
-#> [25] modelr_0.1.5      xfun_0.12         pkgconfig_2.0.3   mgcv_1.8-31      
-#> [29] htmltools_0.4.0   tidyselect_1.0.0  gridExtra_2.3     fansi_0.4.1      
-#> [33] viridisLite_0.3.0 crayon_1.3.4      dbplyr_1.4.2      withr_2.1.2      
-#> [37] grid_3.6.2        nlme_3.1-142      jsonlite_1.6.1    gtable_0.3.0     
-#> [41] lifecycle_0.1.0   DBI_1.1.0         magrittr_1.5      scales_1.1.0     
-#> [45] cli_2.0.1         stringi_1.4.5     farver_2.0.3      fs_1.3.1         
-#> [49] xml2_1.2.2        ellipsis_0.3.0    generics_0.0.2    vctrs_0.2.2      
-#> [53] tools_3.6.2       glue_1.3.1        hms_0.5.3         yaml_2.2.1       
-#> [57] colorspace_1.4-2  UpSetR_1.4.0      rvest_0.3.5       knitr_1.28       
+#> [21] splines_4.0.0     munsell_0.5.0     broom_0.5.6       compiler_4.0.0   
+#> [25] modelr_0.1.7      xfun_0.13         pkgconfig_2.0.3   mgcv_1.8-31      
+#> [29] htmltools_0.4.0   tidyselect_1.1.0  gridExtra_2.3     fansi_0.4.1      
+#> [33] viridisLite_0.3.0 crayon_1.3.4      dbplyr_1.4.3      withr_2.2.0      
+#> [37] grid_4.0.0        nlme_3.1-147      jsonlite_1.6.1    gtable_0.3.0     
+#> [41] lifecycle_0.2.0   DBI_1.1.0         magrittr_1.5      scales_1.1.0     
+#> [45] cli_2.0.2         stringi_1.4.6     farver_2.0.3      fs_1.4.1         
+#> [49] xml2_1.3.2        ellipsis_0.3.0    generics_0.0.2    vctrs_0.3.1      
+#> [53] tools_4.0.0       glue_1.4.0        hms_0.5.3         yaml_2.2.1       
+#> [57] colorspace_1.4-1  UpSetR_1.4.0      rvest_0.3.5       knitr_1.28       
 #> [61] haven_2.2.0
 ```
