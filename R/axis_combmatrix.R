@@ -276,7 +276,11 @@ make_combination_matrix_plot <- function(labels, labels_split, label_set, range,
                                  `FALSE` = theme$combmatrix.panel.point.color.empty)) +
     guides(color="none", fill="none") +
     theme(
+      rect = element_rect(fill = 'transparent', color = 'transparent'),
+      plot.background = element_rect(fill = 'transparent', color = 'transparent'),
       panel.background = element_blank(),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
       axis.text.y = theme$combmatrix.label.text %||% theme$axis.text.y,
       axis.text.x = element_blank(),
       axis.ticks.y = element_blank(),
