@@ -81,7 +81,7 @@ test_that("Plotting with tidy_movies works as expected 2", {
   p <- ggplot(tidy_movies[1:100, ], aes(x=Genres, y=year)) +
     geom_violin() +
     scale_x_upset()
-  expect_silent(ggplot_build(p))
+  ggplot_build(p)
 
   p <- ggplot(tidy_movies[1:100, ], aes(x=sapply(Genres, paste0, collapse="-"), y=year)) +
     geom_boxplot() +
