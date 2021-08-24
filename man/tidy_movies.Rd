@@ -4,7 +4,8 @@
 \name{tidy_movies}
 \alias{tidy_movies}
 \title{Tidy version of the movies dataset from the ggplot2 package}
-\format{a data frame with 50,000 rows and 10 columns
+\format{
+a data frame with 50,000 rows and 10 columns
 \itemize{
   \item title. The title of the movie.
   \item year. Year of release.
@@ -16,7 +17,8 @@
   \item Genres. List column with all genres the movie belongs to
   \item stars, percent_rating. The number of stars and the corresponding
     percentage of people rating the movie with this many stars.
-}}
+}
+}
 \usage{
 tidy_movies
 }
