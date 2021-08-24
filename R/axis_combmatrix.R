@@ -42,6 +42,9 @@ NULL
 #' @param levels The selection of string elements that are displayed in the
 #'   combination matrix axis. Default: NULL, which means simply all elements
 #'   in the text labels are used
+#' @param override_plotting_function to achieve maximum flexibility, you can
+#'   provide a custom plotting function. For more information, see details.
+#'   Default: \code{NULL}
 #' @param xlim,ylim The limits fort the x and y axes
 #' @param expand Boolean with the same effect as in
 #'   \code{ggplot2::coord_cartesian()}. Default: TRUE
@@ -49,6 +52,22 @@ NULL
 #'   \code{ggplot2::coord_cartesian()}. Default: "on"
 #' @param ytrans transformers for y axis. For more information see
 #'   \code{ggplot2::coord_trans()}. Default: "identity"
+#'
+#' @details
+#'  For maximum flexibility, you can use the `override_plotting_function` parameter
+#'  which returns a ggplot and is called with a \code{tibble}
+#'  with one entry per point of the combination matrix. Specifically, it contains
+#'   \describe{
+#'     \item{labels}{the collapsed label string}
+#'     \item{single_label}{an ordered factor with the labels on the left of the plot}
+#'     \item{id}{consecutive numbering of the points}
+#'     \item{labels_split}{a list column that contains the splitted labels}
+#'     \item{at}{the x-position of the point}
+#'     \item{observed}{boolean to indicate if this element is active in the intersection}
+#'     \item{index}{the row of the point}
+#'   }
+#' See the examples how the \code{override_plotting_function} looks that recreates
+#' the default combination matrix
 #'
 #' @examples
 #'   library(ggplot2)
@@ -58,9 +77,35 @@ NULL
 #'     geom_bar() +
 #'     axis_combmatrix(sep = "_")
 #'
+#' # Example of 'override_plotting_function'
+#'
+#' ggplot(mtcars, aes(x=combined)) +
+#'   geom_bar() +
+#'     axis_combmatrix(sep = "_", override_plotting_function = function(df){
+#'       ggplot(df, aes(x= at, y= single_label)) +
+#'         geom_rect(aes(fill= index %% 2 == 0), ymin=df$index-0.5, ymax=df$index+0.5, xmin=0, xmax=1) +
+#'         geom_point(aes(color= observed), size = 3) +
+#'         geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE], aes(group = labels), size= 1.2) +
+#'         ylab("") + xlab("") +
+#'         scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
+#'         scale_fill_manual(values= c(`TRUE` = "white", `FALSE` = "#F7F7F7")) +
+#'         scale_color_manual(values= c(`TRUE` = "black", `FALSE` = "#E0E0E0")) +
+#'         guides(color="none", fill="none") +
+#'         theme(
+#'           panel.background = element_blank(),
+#'           axis.text.x = element_blank(),
+#'           axis.ticks.y = element_blank(),
+#'           axis.ticks.length = unit(0, "pt"),
+#'           axis.title.y = element_blank(),
+#'           axis.title.x = element_blank(),
+#'           axis.line = element_blank(),
+#'           panel.border = element_blank()
+#'         )
+#'     })
+#'
 #' @export
-axis_combmatrix <- function(sep="[^[:alnum:]]+", levels=NULL, xlim = NULL,
-                            ylim = NULL, expand = TRUE, clip = "on",
+axis_combmatrix <- function(sep="[^[:alnum:]]+", levels=NULL, override_plotting_function = NULL,
+                            xlim = NULL, ylim = NULL, expand = TRUE, clip = "on",
                             ytrans="identity") {
   # Copied from coord-transform.R
   if (is.character(ytrans)) ytrans <- as.trans(ytrans)
@@ -71,7 +116,8 @@ axis_combmatrix <- function(sep="[^[:alnum:]]+", levels=NULL, xlim = NULL,
                  expand = expand,
                  clip = clip,
                  sep = sep,
-                 levels = levels
+                 levels = levels,
+                 override_plotting_function = override_plotting_function
   )
 
   list(res, theme_combmatrix())
@@ -196,7 +242,8 @@ render_comb_axis <- function(self, panel_params, axis=c("primary", "secondary"),
                                 label_set= label_set,
                                 range=panel_params$x.range,
                                 at = at,
-                                theme=theme)
+                                theme=theme,
+                                override_plotting_function = self$override_plotting_function)
 
   label_width <- gtable_width(gtable_filter(ggplotGrob(ggpl), "axis-l"))
   if(is.null(theme$combmatrix.label.height)){
@@ -238,7 +285,7 @@ render_comb_axis <- function(self, panel_params, axis=c("primary", "secondary"),
 
 
 
-make_combination_matrix_plot <- function(labels, labels_split, label_set, range, at, theme){
+make_combination_matrix_plot <- function(labels, labels_split, label_set, range, at, theme, override_plotting_function){
 
   df <- tibble(labels, labels_split, at=c(at))
   df2 <- as_tibble(expand.grid(labels=labels, single_label=label_set, stringsAsFactors = FALSE))
@@ -250,42 +297,48 @@ make_combination_matrix_plot <- function(labels, labels_split, label_set, range,
   }, df2$labels_split, df2$single_label)
   df2$index <- as.numeric(as.factor(df2$single_label))
 
-  plt <- ggplot(df2, aes(x= .data$at, y= .data$single_label))
-  if(isTRUE(theme$combmatrix.panel.striped_background)){
-    plt <- plt + geom_rect(aes(fill= .data$index %% 2 == 0), ymin=df2$index-0.5, ymax=df2$index+0.5, xmin=0, xmax=1)
+  if(is.null(override_plotting_function)){
+    plt <- ggplot(df2, aes(x= .data$at, y= .data$single_label))
+    if(isTRUE(theme$combmatrix.panel.striped_background)){
+      plt <- plt + geom_rect(aes(fill= .data$index %% 2 == 0), ymin=df2$index-0.5, ymax=df2$index+0.5, xmin=0, xmax=1)
+    }
+
+    plt <- plt +
+      geom_point(aes(color= .data$observed), size=theme$combmatrix.panel.point.size)
+    if (!isTRUE(theme$combmatrix.panel.line.size == 0)) {
+      # If combmatrix.panel.line.size is not a single number equal to 0, add the
+      # lines. (ifFALSE is available starting in v3.5)
+      plt <- plt + geom_line(
+        data=function(dat) dat[dat$observed, ,drop=FALSE],
+        aes(group = .data$labels),
+        size=theme$combmatrix.panel.line.size
+      )
+    }
+    plt <- plt +
+      ylab("") + xlab("") +
+      scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
+      scale_y_discrete(breaks=label_set, labels=if(is.null(names(label_set))) waiver() else names(label_set)) +
+      scale_fill_manual(values= c(`TRUE` = theme$combmatrix.panel.striped_background.color.one,
+                                  `FALSE` = theme$combmatrix.panel.striped_background.color.two)) +
+      scale_color_manual(values= c(`TRUE` = theme$combmatrix.panel.point.color.fill,
+                                   `FALSE` = theme$combmatrix.panel.point.color.empty)) +
+      guides(color="none", fill="none") +
+      theme(
+        panel.background = element_blank(),
+        axis.text.y = theme$combmatrix.label.text %||% theme$axis.text.y,
+        axis.text.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.ticks.length = unit(0, "pt"),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.line = element_blank(),
+        panel.border = element_blank()
+      )
+  }else{
+    plt <- override_plotting_function(df2)
   }
 
-  plt <- plt +
-    geom_point(aes(color= .data$observed), size=theme$combmatrix.panel.point.size)
-  if (!isTRUE(theme$combmatrix.panel.line.size == 0)) {
-    # If combmatrix.panel.line.size is not a single number equal to 0, add the
-    # lines. (ifFALSE is available starting in v3.5)
-    plt <- plt + geom_line(
-      data=function(dat) dat[dat$observed, ,drop=FALSE],
-      aes(group = .data$labels),
-      size=theme$combmatrix.panel.line.size
-    )
-  }
-  plt +
-    ylab("") + xlab("") +
-    scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
-    scale_y_discrete(breaks=label_set, labels=if(is.null(names(label_set))) waiver() else names(label_set)) +
-    scale_fill_manual(values= c(`TRUE` = theme$combmatrix.panel.striped_background.color.one,
-                                `FALSE` = theme$combmatrix.panel.striped_background.color.two)) +
-    scale_color_manual(values= c(`TRUE` = theme$combmatrix.panel.point.color.fill,
-                                 `FALSE` = theme$combmatrix.panel.point.color.empty)) +
-    guides(color="none", fill="none") +
-    theme(
-      panel.background = element_blank(),
-      axis.text.y = theme$combmatrix.label.text %||% theme$axis.text.y,
-      axis.text.x = element_blank(),
-      axis.ticks.y = element_blank(),
-      axis.ticks.length = unit(0, "pt"),
-      axis.title.y = element_blank(),
-      axis.title.x = element_blank(),
-      axis.line = element_blank(),
-      panel.border = element_blank()
-    )
+  plt
 }
 
 #' @export

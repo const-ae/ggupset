@@ -220,6 +220,85 @@ tidy_movies %>%
                      combmatrix.label.make_space = FALSE)
 ```
 
+## Maximum Flexibility
+
+Sometimes the limited styling options using `combmatrix.panel.point.color.fill` are not enough. To fully customize the combination matrix plot, `axis_combmatrix` has an `override_plotting_function` parameter, that allows us to plot anything in place of the combination matrix.
+
+Let us first reproduce the standard combination plot, but use the `override_plotting_function` parameter to see how it works:
+
+```{r}
+tidy_movies %>%
+  distinct(title, year, length, .keep_all=TRUE) %>%
+  ggplot(aes(x=Genres)) +
+    geom_bar() +
+    scale_x_mergelist(sep = "-") +
+    axis_combmatrix(sep = "-", override_plotting_function = function(df){
+      ggplot(df, aes(x= at, y= single_label)) +
+        geom_rect(aes(fill= index %% 2 == 0), ymin=df$index-0.5, ymax=df$index+0.5, xmin=0, xmax=1) +
+        geom_point(aes(color= observed), size = 3) +
+        geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE], aes(group = labels), size= 1.2) +
+        ylab("") + xlab("") +
+        scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
+        scale_fill_manual(values= c(`TRUE` = "white", `FALSE` = "#F7F7F7")) +
+        scale_color_manual(values= c(`TRUE` = "black", `FALSE` = "#E0E0E0")) +
+        guides(color="none", fill="none") +
+        theme(
+          panel.background = element_blank(),
+          axis.text.x = element_blank(),
+          axis.ticks.y = element_blank(),
+          axis.ticks.length = unit(0, "pt"),
+          axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          axis.line = element_blank(),
+          panel.border = element_blank()
+        )
+    })
+```
+
+We can use the above template, to specifically highlight for example all sets that include the _Action_ category.
+
+```{r}
+tidy_movies %>%
+  distinct(title, year, length, .keep_all=TRUE) %>%
+  ggplot(aes(x=Genres)) +
+    geom_bar() +
+    scale_x_mergelist(sep = "-") +
+    axis_combmatrix(sep = "-", override_plotting_function = function(df){
+      print(class(df))
+      print(df)
+      df %>%
+        mutate(action_movie = case_when(
+          ! observed ~ "not observed",
+          map_lgl(labels_split, ~ "Action" %in% .x) ~ "Action",
+          observed ~ "Non-Action"
+        )) %>%
+        ggplot(aes(x = at, y = single_label)) +
+          geom_rect(aes(fill = index %% 2 == 0), ymin=df$index-0.5, ymax=df$index+0.5, xmin=0, xmax=1) +
+          geom_point(aes(color = action_movie), size = 3) +
+          geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE], aes(group = labels, color = action_movie), size= 1.2) +
+          ylab("") + xlab("") +
+          scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
+          scale_fill_manual(values= c(`TRUE` = "white", `FALSE` = "#F7F7F7")) +
+          scale_color_manual(values= c("Action" = "red", "Non-Action" = "black", "not observed" = "lightgrey")) +
+          guides(fill="none") +
+          theme(
+            legend.position = "bottom",
+            panel.background = element_blank(),
+            axis.text.x = element_blank(),
+            axis.ticks.y = element_blank(),
+            axis.ticks.length = unit(0, "pt"),
+            axis.title.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.line = element_blank(),
+            panel.border = element_blank()
+          )
+    }) +
+    theme(combmatrix.label.total_extra_spacing = unit(30, "pt"))
+```
+
+The `override_plotting_function` is incredibly powerful, but also an advanced feature that comes with pitfalls. Use at your own risk.
+
+
 ## Alternative Packages
 
 There is already a package called `UpSetR` ([GitHub](https://github.com/hms-dbmi/UpSetR),

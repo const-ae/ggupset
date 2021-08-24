@@ -7,6 +7,7 @@
 axis_combmatrix(
   sep = "[^[:alnum:]]+",
   levels = NULL,
+  override_plotting_function = NULL,
   xlim = NULL,
   ylim = NULL,
   expand = TRUE,
@@ -21,6 +22,10 @@ regex. Default: \code{"[^[:alnum:]]+"}}
 \item{levels}{The selection of string elements that are displayed in the
 combination matrix axis. Default: NULL, which means simply all elements
 in the text labels are used}
+
+\item{override_plotting_function}{to achieve maximum flexibility, you can
+provide a custom plotting function. For more information, see details.
+Default: \code{NULL}}
 
 \item{xlim, ylim}{The limits fort the x and y axes}
 
@@ -49,6 +54,22 @@ To maintain compatibility additional arguments like \code{ytrans},
   first step \code{scale_x_mergelist()} turns a list argument
   to 'x' into a character vector that \code{axis_combmatrix()}
   can work with.
+
+
+ For maximum flexibility, you can use the `override_plotting_function` parameter
+ which returns a ggplot and is called with a \code{tibble}
+ with one entry per point of the combination matrix. Specifically, it contains
+  \describe{
+    \item{labels}{the collapsed label string}
+    \item{single_label}{an ordered factor with the labels on the left of the plot}
+    \item{id}{consecutive numbering of the points}
+    \item{labels_split}{a list column that contains the splitted labels}
+    \item{at}{the x-position of the point}
+    \item{observed}{boolean to indicate if this element is active in the intersection}
+    \item{index}{the row of the point}
+  }
+See the examples how the \code{override_plotting_function} looks that recreates
+the default combination matrix
 }
 \examples{
   library(ggplot2)
@@ -57,5 +78,31 @@ To maintain compatibility additional arguments like \code{ytrans},
   ggplot(mtcars, aes(x=combined)) +
     geom_bar() +
     axis_combmatrix(sep = "_")
+
+# Example of 'override_plotting_function'
+
+ggplot(mtcars, aes(x=combined)) +
+  geom_bar() +
+    axis_combmatrix(sep = "_", override_plotting_function = function(df){
+      ggplot(df, aes(x= at, y= single_label)) +
+        geom_rect(aes(fill= index \%\% 2 == 0), ymin=df$index-0.5, ymax=df$index+0.5, xmin=0, xmax=1) +
+        geom_point(aes(color= observed), size = 3) +
+        geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE], aes(group = labels), size= 1.2) +
+        ylab("") + xlab("") +
+        scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
+        scale_fill_manual(values= c(`TRUE` = "white", `FALSE` = "#F7F7F7")) +
+        scale_color_manual(values= c(`TRUE` = "black", `FALSE` = "#E0E0E0")) +
+        guides(color="none", fill="none") +
+        theme(
+          panel.background = element_blank(),
+          axis.text.x = element_blank(),
+          axis.ticks.y = element_blank(),
+          axis.ticks.length = unit(0, "pt"),
+          axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          axis.line = element_blank(),
+          panel.border = element_blank()
+        )
+    })
 
 }
