@@ -1,3 +1,9 @@
+
+# Development version (v0.3.0.900x)
+
+* New parameter `override_plotting_function` for `axis_combmatrix` that gives maximum
+flexibility to modify the combination matrix plot in any desired way.
+
 # v0.3.0
 
 * Remove deprecated `as.tibble()` call (thanks to @abichat)
