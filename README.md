@@ -29,11 +29,14 @@ This is a basic example which shows you how to solve a common problem:
 # Load helper packages
 library(ggplot2)
 library(tidyverse, warn.conflicts = FALSE)
-#> ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
-#> ✓ tibble  3.1.2     ✓ dplyr   1.0.7
-#> ✓ tidyr   1.1.3     ✓ stringr 1.4.0
-#> ✓ readr   1.4.0     ✓ forcats 0.5.1
-#> ✓ purrr   0.3.4
+#> Registered S3 method overwritten by 'rvest':
+#>   method            from
+#>   read_xml.response xml2
+#> ── Attaching packages ─────────────────────────────────────── tidyverse 1.2.1 ──
+#> ✓ tibble  3.1.4     ✓ purrr   0.3.4
+#> ✓ tidyr   1.1.3     ✓ dplyr   1.0.7
+#> ✓ readr   1.3.1     ✓ stringr 1.4.0
+#> ✓ tibble  3.1.4     ✓ forcats 0.4.0
 #> ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 #> x dplyr::filter() masks stats::filter()
 #> x dplyr::lag()    masks stats::lag()
@@ -50,7 +53,7 @@ data and other general information on the movie. It also includes a
 
 ``` r
 tidy_movies
-#> # A tibble: 50,000 x 10
+#> # A tibble: 50,000 × 10
 #>    title       year length budget rating votes mpaa  Genres stars percent_rating
 #>    <chr>      <int>  <int>  <int>  <dbl> <int> <chr> <list> <dbl>          <dbl>
 #>  1 Ei ist ei…  1993     90   NA      8.4    15 ""    <chr …     1            4.5
@@ -142,7 +145,7 @@ tidy_pathway_member <- gene_pathway_membership %>%
   select(- Member)
 
 tidy_pathway_member
-#> # A tibble: 44 x 2
+#> # A tibble: 44 × 2
 #>    Pathway             Gene  
 #>    <chr>               <chr> 
 #>  1 Chemokine Secretion Aco1  
@@ -167,7 +170,7 @@ pathways so we will aggregate the data by `Gene` and create a
 tidy_pathway_member %>%
   group_by(Gene) %>%
   summarize(Pathways = list(Pathway))
-#> # A tibble: 37 x 2
+#> # A tibble: 37 × 2
 #>    Gene   Pathways 
 #>    <chr>  <list>   
 #>  1 Aco1   <chr [2]>
@@ -204,7 +207,7 @@ tidy_movies %>%
   distinct(title, year, length, .keep_all=TRUE) %>%
   mutate(Genres_collapsed = sapply(Genres, function(x) paste0(sort(x), collapse = "-"))) %>%
   select(title, Genres, Genres_collapsed)
-#> # A tibble: 5,000 x 3
+#> # A tibble: 5,000 × 3
 #>    title                                   Genres    Genres_collapsed  
 #>    <chr>                                   <list>    <chr>             
 #>  1 Ei ist eine geschissene Gottesgabe, Das <chr [1]> "Documentary"     
@@ -386,7 +389,7 @@ tidy_movies %>%
 <img src="man/figures/README-unnamed-chunk-15-1.png" width="70%" />
 
     #> [1] "tbl_df"     "tbl"        "data.frame"
-    #> # A tibble: 336 x 7
+    #> # A tibble: 336 × 7
     #>    labels                  single_label    id labels_split     at observed index
     #>    <ord>                   <ord>        <int> <list>        <dbl> <lgl>    <dbl>
     #>  1 ""                      Short            1 <chr [0]>    0.0124 FALSE        1
@@ -465,7 +468,7 @@ designs, where each sample got a combination of different treatments.
 
 ``` r
 df_complex_conditions
-#> # A tibble: 360 x 4
+#> # A tibble: 360 × 4
 #>    KO    DrugA Timepoint response
 #>    <lgl> <chr>     <dbl>    <dbl>
 #>  1 TRUE  Yes           8     84.3
@@ -517,7 +520,7 @@ avg_rating <- tidy_movies %>%
 #> `summarise()` has grouped output by 'stars'. You can override using the `.groups` argument.
 
 avg_rating
-#> # A tibble: 130 x 3
+#> # A tibble: 130 × 3
 #> # Groups:   Genres_collapsed [13]
 #>    stars Genres_collapsed percent_rating
 #>    <dbl> <fct>                     <dbl>
@@ -546,44 +549,66 @@ ggplot(avg_rating, aes(x=Genres_collapsed, y=stars, fill=percent_rating)) +
 
 <img src="man/figures/README-unnamed-chunk-18-1.png" width="70%" />
 
+## Saving Plots
+
+There is an important pitfall when trying to save a plot with a
+combination matrix. When you use `ggsave()`, ggplot2 automatically saves
+the last plot that was created. However, here `last_plot()` refers to
+only the combination matrix. To store the full plot, you need to
+explicitly assign it to a variable and save that.
+
+``` r
+pl <- tidy_movies %>%
+  distinct(title, year, length, .keep_all=TRUE) %>%
+  ggplot(aes(x=Genres)) +
+    geom_bar() +
+    scale_x_upset(n_intersections = 20)
+ggsave("/tmp/movie_genre_barchart.png", plot = pl)
+#> Saving 7 x 5 in image
+```
+
 ## Session Info
 
 ``` r
 sessionInfo()
-#> R version 4.1.0 (2021-05-18)
-#> Platform: x86_64-apple-darwin17.0 (64-bit)
-#> Running under: macOS Mojave 10.14.6
+#> R version 3.6.2 (2019-12-12)
+#> Platform: x86_64-pc-linux-gnu (64-bit)
+#> Running under: Ubuntu 18.04.5 LTS
 #> 
 #> Matrix products: default
-#> BLAS:   /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRblas.dylib
-#> LAPACK: /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRlapack.dylib
+#> BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
+#> LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
 #> 
 #> locale:
-#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+#>  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+#>  [3] LC_TIME=de_DE.UTF-8        LC_COLLATE=en_US.UTF-8    
+#>  [5] LC_MONETARY=de_DE.UTF-8    LC_MESSAGES=en_US.UTF-8   
+#>  [7] LC_PAPER=de_DE.UTF-8       LC_NAME=C                 
+#>  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+#> [11] LC_MEASUREMENT=de_DE.UTF-8 LC_IDENTIFICATION=C       
 #> 
 #> attached base packages:
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#>  [1] ggupset_0.4.0   forcats_0.5.1   stringr_1.4.0   dplyr_1.0.7    
-#>  [5] purrr_0.3.4     readr_1.4.0     tidyr_1.1.3     tibble_3.1.2   
-#>  [9] tidyverse_1.3.1 ggplot2_3.3.4  
+#>  [1] ggupset_0.3.0.9001 forcats_0.4.0      stringr_1.4.0      dplyr_1.0.7       
+#>  [5] purrr_0.3.4        readr_1.3.1        tidyr_1.1.3        tibble_3.1.4      
+#>  [9] tidyverse_1.2.1    ggplot2_3.3.5     
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] Rcpp_1.0.6        lattice_0.20-44   lubridate_1.7.10  assertthat_0.2.1 
-#>  [5] digest_0.6.27     utf8_1.2.1        R6_2.5.0          cellranger_1.1.0 
-#>  [9] plyr_1.8.6        backports_1.2.1   reprex_2.0.0      evaluate_0.14    
-#> [13] httr_1.4.2        highr_0.9         pillar_1.6.1      rlang_0.4.11     
-#> [17] readxl_1.3.1      rstudioapi_0.13   Matrix_1.3-4      rmarkdown_2.9    
-#> [21] labeling_0.4.2    splines_4.1.0     munsell_0.5.0     broom_0.7.7      
-#> [25] compiler_4.1.0    modelr_0.1.8      xfun_0.24         pkgconfig_2.0.3  
-#> [29] mgcv_1.8-36       htmltools_0.5.1.1 tidyselect_1.1.1  gridExtra_2.3    
-#> [33] viridisLite_0.4.0 fansi_0.5.0       crayon_1.4.1      dbplyr_2.1.1     
-#> [37] withr_2.4.2       grid_4.1.0        nlme_3.1-152      jsonlite_1.7.2   
-#> [41] gtable_0.3.0      lifecycle_1.0.0   DBI_1.1.1         magrittr_2.0.1   
-#> [45] scales_1.1.1      cli_2.5.0         stringi_1.6.2     farver_2.1.0     
-#> [49] fs_1.5.0          xml2_1.3.2        ellipsis_0.3.2    generics_0.1.0   
-#> [53] vctrs_0.3.8       tools_4.1.0       glue_1.4.2        hms_1.1.0        
-#> [57] yaml_2.2.1        colorspace_2.0-1  UpSetR_1.4.0      rvest_1.0.0      
-#> [61] knitr_1.33        haven_2.4.1
+#>  [1] tidyselect_1.1.1  xfun_0.25         splines_3.6.2     haven_2.1.0      
+#>  [5] lattice_0.20-38   colorspace_1.4-1  vctrs_0.3.8       generics_0.0.2   
+#>  [9] viridisLite_0.3.0 htmltools_0.3.6   mgcv_1.8-31       yaml_2.2.0       
+#> [13] utf8_1.1.4        rlang_0.4.11      pillar_1.6.2      glue_1.4.2       
+#> [17] withr_2.4.2       DBI_1.0.0         modelr_0.1.4      readxl_1.3.1     
+#> [21] plyr_1.8.4        lifecycle_1.0.0   munsell_0.5.0     gtable_0.3.0     
+#> [25] cellranger_1.1.0  rvest_0.3.3       evaluate_0.13     UpSetR_1.3.3     
+#> [29] labeling_0.3      knitr_1.33        fansi_0.4.0       highr_0.8        
+#> [33] broom_0.5.2       Rcpp_1.0.1        scales_1.0.0      backports_1.1.4  
+#> [37] jsonlite_1.6      gridExtra_2.3     hms_0.4.2         digest_0.6.18    
+#> [41] stringi_1.4.3     grid_3.6.2        cli_3.0.1         tools_3.6.2      
+#> [45] magrittr_1.5      crayon_1.3.4      pkgconfig_2.0.2   Matrix_1.2-18    
+#> [49] ellipsis_0.3.2    xml2_1.2.0        lubridate_1.7.4   rmarkdown_2.10   
+#> [53] httr_1.4.2        rstudioapi_0.13   R6_2.4.0          nlme_3.1-143     
+#> [57] compiler_3.6.2
 ```

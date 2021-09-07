@@ -401,6 +401,21 @@ ggplot(avg_rating, aes(x=Genres_collapsed, y=stars, fill=percent_rating)) +
 ```
 
 
+## Saving Plots
+
+There is an important pitfall when trying to save a plot with a combination matrix.
+When you use `ggsave()`, ggplot2 automatically saves the last plot that was created.
+However, here `last_plot()` refers to only the combination matrix. To store the full
+plot, you need to explicitly assign it to a variable and save that.
+```{r warning=FALSE}
+pl <- tidy_movies %>%
+  distinct(title, year, length, .keep_all=TRUE) %>%
+  ggplot(aes(x=Genres)) +
+    geom_bar() +
+    scale_x_upset(n_intersections = 20)
+ggsave("/tmp/movie_genre_barchart.png", plot = pl)
+```
+
 
 ## Session Info
 
