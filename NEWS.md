@@ -3,6 +3,7 @@
 
 * New parameter `override_plotting_function` for `axis_combmatrix` that gives maximum
 flexibility to modify the combination matrix plot in any desired way.
+* Fix bug when remobing y-axis (`theme(axis.text.y = element_blank())`)
 
 # v0.3.0
 
