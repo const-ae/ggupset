@@ -247,8 +247,12 @@ render_comb_axis <- function(self, panel_params, axis=c("primary", "secondary"),
 
   label_width <- gtable_width(gtable_filter(ggplotGrob(ggpl), "axis-l"))
   if(is.null(theme$combmatrix.label.height)){
-    label_height <- unit((calc_element("axis.text.y", theme)$size +
-                            theme$combmatrix.label.extra_spacing) * length(label_set), "pt") +
+    if(length(calc_element("axis.text.y", theme)) > 0){
+      axis_text_size <- calc_element("axis.text.y", theme)$size
+    }else{
+      axis_text_size <- 0
+    }
+    label_height <- unit((axis_text_size + theme$combmatrix.label.extra_spacing) * length(label_set), "pt") +
       theme$combmatrix.label.total_extra_spacing
   }else{
     label_height <- theme$combmatrix.label.height
