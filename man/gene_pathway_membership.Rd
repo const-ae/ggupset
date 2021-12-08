@@ -4,9 +4,11 @@
 \name{gene_pathway_membership}
 \alias{gene_pathway_membership}
 \title{A fictional dataset describing which genes belong to certain pathways}
-\format{a matrix with 6 rows and 37 columns. Each row is one pathway, with
+\format{
+a matrix with 6 rows and 37 columns. Each row is one pathway, with
   its name given as `rownames` and each column is a gene. The values
-  in the matrix are Boolean indicators if the gene is a member of the pathway.}
+  in the matrix are Boolean indicators if the gene is a member of the pathway.
+}
 \usage{
 gene_pathway_membership
 }

@@ -4,7 +4,8 @@
 \name{df_complex_conditions}
 \alias{df_complex_conditions}
 \title{A fictional biological dataset with a complex experimental design}
-\format{a data frame with 360 rows and 4 variables
+\format{
+a data frame with 360 rows and 4 variables
 \itemize{
   \item KO. Boolean value if the sample had a knock out.
   \item DrugA. character vector with "Yes" and "No" elements
@@ -15,7 +16,8 @@
   \item response. Numeric vector with the response of the sample
     to the treatment conditions. Could for example be the concentration
     of a metabolite.
-}}
+}
+}
 \usage{
 df_complex_conditions
 }
