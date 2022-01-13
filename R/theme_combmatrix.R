@@ -33,6 +33,8 @@
 #'   in the combination matrix. Default: 3
 #' @param combmatrix.panel.line.size Number to specify the size of the lines
 #'   connecting the points. Default: 1.2
+#' @param combmatrix.panel.line.color Color of the lines connecting the points.
+#' Default: "black"
 #' @param combmatrix.panel.point.color.fill Color of the filled points.
 #'   Default: "black"
 #' @param combmatrix.panel.point.color.empty Color of the empty points.
@@ -72,6 +74,7 @@ theme_combmatrix <- function(
   combmatrix.panel.striped_background.color.two = "#F7F7F7",
   combmatrix.panel.point.size = 3,
   combmatrix.panel.line.size = 1.2,
+  combmatrix.panel.line.color = "black",
   combmatrix.panel.point.color.fill = "black",
   combmatrix.panel.point.color.empty = "#E0E0E0",
   ...
@@ -89,6 +92,7 @@ theme_combmatrix <- function(
     combmatrix.panel.striped_background.color.two = combmatrix.panel.striped_background.color.two,
     combmatrix.panel.point.size = combmatrix.panel.point.size,
     combmatrix.panel.line.size = combmatrix.panel.line.size,
+    combmatrix.panel.line.color = combmatrix.panel.line.color,
     combmatrix.panel.point.color.fill = combmatrix.panel.point.color.fill,
     combmatrix.panel.point.color.empty = combmatrix.panel.point.color.empty,
     ...,
