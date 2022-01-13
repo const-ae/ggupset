@@ -316,7 +316,7 @@ make_combination_matrix_plot <- function(labels, labels_split, label_set, range,
         data=function(dat) dat[dat$observed, ,drop=FALSE],
         aes(group = .data$labels),
         size=theme$combmatrix.panel.line.size,
-        color=theme$combmatrix.panel.line.color,
+        color=theme$combmatrix.panel.line.color
       )
     }
     plt <- plt +
