@@ -17,6 +17,7 @@ theme_combmatrix(
   combmatrix.panel.striped_background.color.two = "#F7F7F7",
   combmatrix.panel.point.size = 3,
   combmatrix.panel.line.size = 1.2,
+  combmatrix.panel.line.color = "black",
   combmatrix.panel.point.color.fill = "black",
   combmatrix.panel.point.color.empty = "#E0E0E0",
   ...
@@ -64,6 +65,9 @@ in the combination matrix. Default: 3}
 
 \item{combmatrix.panel.line.size}{Number to specify the size of the lines
 connecting the points. Default: 1.2}
+
+\item{combmatrix.panel.line.color}{Color of the lines connecting the points.
+Default: "black"}
 
 \item{combmatrix.panel.point.color.fill}{Color of the filled points.
 Default: "black"}
