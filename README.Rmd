@@ -298,7 +298,6 @@ tidy_movies %>%
 
 The `override_plotting_function` is incredibly powerful, but also an advanced feature that comes with pitfalls. Use at your own risk.
 
-
 ## Alternative Packages
 
 There is already a package called `UpSetR` ([GitHub](https://github.com/hms-dbmi/UpSetR),
@@ -398,6 +397,36 @@ ggplot(avg_rating, aes(x=Genres_collapsed, y=stars, fill=percent_rating)) +
                     "Documentary", "Action", "Romance", "Animation", "Other")) +
     scale_fill_viridis_c()
 
+```
+
+#### 3. Applied to summarised data
+
+When we got summarized data like that, some data processing is required.
+
+```{r}
+tidy_movies_agg <- tidy_movies %>%
+  distinct(title, year, length, .keep_all=TRUE) %>%
+  group_by(Genres) %>% 
+  summarise(count=n()) %>%
+  arrange(desc(count)) %>%
+  top_n(n=20, wt=count) 
+tidy_movies_agg %>% 
+  head()
+```
+
+To use `reorder()` and `axis_combmatrix()`, the genres column connected the list items by '-' and converted to factor from list. we get the same figure as displayed in the first example.
+
+```{r}
+tidy_movies_agg <- tidy_movies_agg %>% 
+  mutate(Genres_str = sapply(Genres, function(x) paste0(sort(x), collapse="-"))) %>% 
+  mutate(Genres_fct = factor(Genres_str))
+
+tidy_movies_agg %>%
+  ggplot(aes(x=reorder(Genres_fct, -count),y=count)) +
+  geom_bar(stat = "identity") +
+  axis_combmatrix(sep = "-",
+                  levels = c("Drama", "Comedy", "Short", 
+                             "Documentary", "Action", "Romance", "Animation", "Other"))
 ```
 
 
