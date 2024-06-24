@@ -236,7 +236,7 @@ tidy_movies %>%
       ggplot(df, aes(x= at, y= single_label)) +
         geom_rect(aes(fill= index %% 2 == 0), ymin=df$index-0.5, ymax=df$index+0.5, xmin=0, xmax=1) +
         geom_point(aes(color= observed), size = 3) +
-        geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE], aes(group = labels), size= 1.2) +
+        geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE], aes(group = labels), linewidth= 1.2) +
         ylab("") + xlab("") +
         scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
         scale_fill_manual(values= c(`TRUE` = "white", `FALSE` = "#F7F7F7")) +
@@ -275,7 +275,7 @@ tidy_movies %>%
         ggplot(aes(x = at, y = single_label)) +
           geom_rect(aes(fill = index %% 2 == 0), ymin=df$index-0.5, ymax=df$index+0.5, xmin=0, xmax=1) +
           geom_point(aes(color = action_movie), size = 3) +
-          geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE], aes(group = labels, color = action_movie), size= 1.2) +
+          geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE], aes(group = labels, color = action_movie), linewidth= 1.2) +
           ylab("") + xlab("") +
           scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
           scale_fill_manual(values= c(`TRUE` = "white", `FALSE` = "#F7F7F7")) +
@@ -390,8 +390,8 @@ avg_rating
 
 # Plot using the combination matrix axis
 # the red lines indicate the average rating per genre
-ggplot(avg_rating, aes(x=Genres_collapsed, y=stars, fill=percent_rating)) +
-    geom_tile() +
+ggplot(avg_rating, aes(x=Genres_collapsed, y=stars)) +
+    geom_tile(aes(fill=percent_rating)) +
     stat_summary_bin(aes(y=percent_rating * stars), fun = sum,  geom="point", 
                      shape="—", color="red", size=6) +
     axis_combmatrix(sep = "-", levels = c("Drama", "Comedy", "Short", 

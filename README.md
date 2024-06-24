@@ -29,17 +29,15 @@ This is a basic example which shows you how to solve a common problem:
 # Load helper packages
 library(ggplot2)
 library(tidyverse, warn.conflicts = FALSE)
-#> Registered S3 method overwritten by 'rvest':
-#>   method            from
-#>   read_xml.response xml2
-#> ── Attaching packages ─────────────────────────────────────── tidyverse 1.2.1 ──
-#> ✓ tibble  3.1.4     ✓ purrr   0.3.4
-#> ✓ tidyr   1.1.3     ✓ dplyr   1.0.7
-#> ✓ readr   1.3.1     ✓ stringr 1.4.0
-#> ✓ tibble  3.1.4     ✓ forcats 0.4.0
+#> ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+#> ✔ dplyr     1.1.4     ✔ readr     2.1.5
+#> ✔ forcats   1.0.0     ✔ stringr   1.5.1
+#> ✔ lubridate 1.9.3     ✔ tibble    3.2.1
+#> ✔ purrr     1.0.2     ✔ tidyr     1.3.1
 #> ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-#> x dplyr::filter() masks stats::filter()
-#> x dplyr::lag()    masks stats::lag()
+#> ✖ dplyr::filter() masks stats::filter()
+#> ✖ dplyr::lag()    masks stats::lag()
+#> ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
 
 # Load my package
 library(ggupset)
@@ -56,23 +54,23 @@ tidy_movies
 #> # A tibble: 50,000 × 10
 #>    title       year length budget rating votes mpaa  Genres stars percent_rating
 #>    <chr>      <int>  <int>  <int>  <dbl> <int> <chr> <list> <dbl>          <dbl>
-#>  1 Ei ist ei…  1993     90   NA      8.4    15 ""    <chr …     1            4.5
-#>  2 Hamos sto…  1985    109   NA      5.5    14 ""    <chr …     1            4.5
-#>  3 Mind Bend…  1963     99   NA      6.4    54 ""    <chr …     1            0  
-#>  4 Trop (peu…  1998    119   NA      4.5    20 ""    <chr …     1           24.5
-#>  5 Crystania…  1995     85   NA      6.1    25 ""    <chr …     1            0  
-#>  6 Totale!, …  1991    102   NA      6.3   210 ""    <chr …     1            4.5
-#>  7 Visibleme…  1995    100   NA      4.6     7 ""    <chr …     1           24.5
-#>  8 Pang shen…  1976     85   NA      7.4     8 ""    <chr …     1            0  
-#>  9 Not as a …  1955    135    2e6    6.6   223 ""    <chr …     1            4.5
-#> 10 Autobiogr…  1994     87   NA      7.4     5 ""    <chr …     1            0  
-#> # … with 49,990 more rows
+#>  1 Ei ist ei…  1993     90   NA      8.4    15 ""    <chr>      1            4.5
+#>  2 Hamos sto…  1985    109   NA      5.5    14 ""    <chr>      1            4.5
+#>  3 Mind Bend…  1963     99   NA      6.4    54 ""    <chr>      1            0  
+#>  4 Trop (peu…  1998    119   NA      4.5    20 ""    <chr>      1           24.5
+#>  5 Crystania…  1995     85   NA      6.1    25 ""    <chr>      1            0  
+#>  6 Totale!, …  1991    102   NA      6.3   210 ""    <chr>      1            4.5
+#>  7 Visibleme…  1995    100   NA      4.6     7 ""    <chr>      1           24.5
+#>  8 Pang shen…  1976     85   NA      7.4     8 ""    <chr>      1            0  
+#>  9 Not as a …  1955    135    2e6    6.6   223 ""    <chr>      1            4.5
+#> 10 Autobiogr…  1994     87   NA      7.4     5 ""    <chr>      1            0  
+#> # ℹ 49,990 more rows
 ```
 
 `ggupset` makes it easy to get an immediate impression how many movies
 are in each genre and their combination. For example there are slightly
 more than 1200 Dramas in the set, more than 1000 which don’t belong to
-any genre and \~170 that are Comedy and Drama.
+any genre and ~170 that are Comedy and Drama.
 
 ``` r
 tidy_movies %>%
@@ -80,7 +78,8 @@ tidy_movies %>%
   ggplot(aes(x=Genres)) +
     geom_bar() +
     scale_x_upset(n_intersections = 20)
-#> Warning: Removed 100 rows containing non-finite values (stat_count).
+#> Warning: Removed 100 rows containing non-finite outside the scale range
+#> (`stat_count()`).
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="70%" />
@@ -100,9 +99,10 @@ tidy_movies %>%
     geom_text(stat='count', aes(label=after_stat(count)), vjust=-1) +
     scale_x_upset(n_intersections = 20) +
     scale_y_continuous(breaks = NULL, lim = c(0, 1350), name = "")
-#> Warning: Removed 100 rows containing non-finite values (stat_count).
-
-#> Warning: Removed 100 rows containing non-finite values (stat_count).
+#> Warning: Removed 100 rows containing non-finite outside the scale range
+#> (`stat_count()`).
+#> Removed 100 rows containing non-finite outside the scale range
+#> (`stat_count()`).
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" width="70%" />
@@ -158,7 +158,7 @@ tidy_pathway_member
 #>  8 Meiotic Cell Cycle  Cdc25a
 #>  9 Meiotic Cell Cycle  Cdc25c
 #> 10 Chemokine Secretion Chia1 
-#> # … with 34 more rows
+#> # ℹ 34 more rows
 ```
 
 `tidy_pathway_member` is already a very good starting point for plotting
@@ -183,7 +183,7 @@ tidy_pathway_member %>%
 #>  8 Cdc25c <chr [1]>
 #>  9 Chia1  <chr [1]>
 #> 10 Csf1r  <chr [1]>
-#> # … with 27 more rows
+#> # ℹ 27 more rows
 ```
 
 ``` r
@@ -220,7 +220,7 @@ tidy_movies %>%
 #>  8 Pang shen feng                          <chr [2]> "Action-Animation"
 #>  9 Not as a Stranger                       <chr [1]> "Drama"           
 #> 10 Autobiographia Dimionit                 <chr [1]> "Drama"           
-#> # … with 4,990 more rows
+#> # ℹ 4,990 more rows
 ```
 
 We can easily make a plot using the strings as categorical axis labels
@@ -276,7 +276,8 @@ tidy_movies %>%
   ggplot(aes(x=Genres)) +
     geom_bar() +
     scale_x_upset(order_by = "degree")
-#> Warning: Removed 1076 rows containing non-finite values (stat_count).
+#> Warning: Removed 1076 rows containing non-finite outside the scale range
+#> (`stat_count()`).
 ```
 
 <img src="man/figures/README-unnamed-chunk-12-1.png" width="70%" />
@@ -297,7 +298,8 @@ tidy_movies %>%
     theme_combmatrix(combmatrix.panel.point.color.fill = "green",
                      combmatrix.panel.line.size = 0,
                      combmatrix.label.make_space = FALSE)
-#> Warning: Removed 1076 rows containing non-finite values (stat_count).
+#> Warning: Removed 1076 rows containing non-finite outside the scale range
+#> (`stat_count()`).
 ```
 
 <img src="man/figures/README-unnamed-chunk-13-1.png" width="70%" />
@@ -323,7 +325,7 @@ tidy_movies %>%
       ggplot(df, aes(x= at, y= single_label)) +
         geom_rect(aes(fill= index %% 2 == 0), ymin=df$index-0.5, ymax=df$index+0.5, xmin=0, xmax=1) +
         geom_point(aes(color= observed), size = 3) +
-        geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE], aes(group = labels), size= 1.2) +
+        geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE], aes(group = labels), linewidth= 1.2) +
         ylab("") + xlab("") +
         scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
         scale_fill_manual(values= c(`TRUE` = "white", `FALSE` = "#F7F7F7")) +
@@ -365,7 +367,7 @@ tidy_movies %>%
         ggplot(aes(x = at, y = single_label)) +
           geom_rect(aes(fill = index %% 2 == 0), ymin=df$index-0.5, ymax=df$index+0.5, xmin=0, xmax=1) +
           geom_point(aes(color = action_movie), size = 3) +
-          geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE], aes(group = labels, color = action_movie), size= 1.2) +
+          geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE], aes(group = labels, color = action_movie), linewidth= 1.2) +
           ylab("") + xlab("") +
           scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
           scale_fill_manual(values= c(`TRUE` = "white", `FALSE` = "#F7F7F7")) +
@@ -402,7 +404,7 @@ tidy_movies %>%
     #>  8 "Action-Comedy-Romance" Short            8 <chr [3]>    0.158  FALSE        1
     #>  9 "Action-Comedy-Short"   Short            9 <chr [3]>    0.178  TRUE         1
     #> 10 "Action-Documentary"    Short           10 <chr [2]>    0.199  FALSE        1
-    #> # … with 326 more rows
+    #> # ℹ 326 more rows
 
 The `override_plotting_function` is incredibly powerful, but also an
 advanced feature that comes with pitfalls. Use at your own risk.
@@ -417,6 +419,7 @@ package. It produces a similar plot with an additional view that shows
 the overall size of each genre.
 
 ``` r
+
 # UpSetR
 tidy_movies %>%
   distinct(title, year, length, .keep_all=TRUE) %>%
@@ -430,13 +433,15 @@ tidy_movies %>%
 <img src="man/figures/README-unnamed-chunk-16-1.png" width="70%" />
 
 ``` r
+
 # ggupset
 tidy_movies %>%
   distinct(title, year, length, .keep_all=TRUE) %>%
   ggplot(aes(x=Genres)) +
     geom_bar() +
     scale_x_upset(order_by = "degree", n_sets = 5)
-#> Warning: Removed 1311 rows containing non-finite values (stat_count).
+#> Warning: Removed 1311 rows containing non-finite outside the scale range
+#> (`stat_count()`).
 ```
 
 <img src="man/figures/README-unnamed-chunk-16-2.png" width="70%" />
@@ -454,7 +459,8 @@ tidy_movies %>%
   ggplot(aes(x=Genres, y=year)) +
     geom_violin() +
     scale_x_upset(order_by = "freq", n_intersections = 12)
-#> Warning: Removed 513 rows containing non-finite values (stat_ydensity).
+#> Warning: Removed 513 rows containing non-finite outside the scale range
+#> (`stat_ydensity()`).
 ```
 
 <img src="man/figures/README-violinexample-1.png" width="70%" />
@@ -481,7 +487,7 @@ df_complex_conditions
 #>  8 TRUE  Yes           8    118. 
 #>  9 TRUE  Yes           8    114. 
 #> 10 TRUE  Yes           8     92.4
-#> # … with 350 more rows
+#> # ℹ 350 more rows
 
 df_complex_conditions %>%
   mutate(Label = pmap(list(KO, DrugA, Timepoint), function(KO, DrugA, Timepoint){
@@ -496,7 +502,7 @@ df_complex_conditions %>%
                   position="top", name = "") +
     theme_combmatrix(combmatrix.label.text = element_text(size=12),
                      combmatrix.label.extra_spacing = 5)
-#> `geom_smooth()` using formula 'y ~ x'
+#> `geom_smooth()` using formula = 'y ~ x'
 ```
 
 <img src="man/figures/README-unnamed-chunk-17-1.png" width="70%" />
@@ -517,7 +523,8 @@ avg_rating <- tidy_movies %>%
   group_by(Genres_collapsed) %>%
   mutate(percent_rating = percent_rating / sum(percent_rating)) %>%
   arrange(Genres_collapsed)
-#> `summarise()` has grouped output by 'stars'. You can override using the `.groups` argument.
+#> `summarise()` has grouped output by 'stars'. You can override using the
+#> `.groups` argument.
 
 avg_rating
 #> # A tibble: 130 × 3
@@ -534,12 +541,12 @@ avg_rating
 #>  8     8 Drama                    0.175 
 #>  9     9 Drama                    0.170 
 #> 10    10 Drama                    0.235 
-#> # … with 120 more rows
+#> # ℹ 120 more rows
 
 # Plot using the combination matrix axis
 # the red lines indicate the average rating per genre
-ggplot(avg_rating, aes(x=Genres_collapsed, y=stars, fill=percent_rating)) +
-    geom_tile() +
+ggplot(avg_rating, aes(x=Genres_collapsed, y=stars)) +
+    geom_tile(aes(fill=percent_rating)) +
     stat_summary_bin(aes(y=percent_rating * stars), fun = sum,  geom="point", 
                      shape="—", color="red", size=6) +
     axis_combmatrix(sep = "-", levels = c("Drama", "Comedy", "Short", 
@@ -571,44 +578,40 @@ ggsave("/tmp/movie_genre_barchart.png", plot = pl)
 
 ``` r
 sessionInfo()
-#> R version 3.6.2 (2019-12-12)
-#> Platform: x86_64-pc-linux-gnu (64-bit)
-#> Running under: Ubuntu 18.04.5 LTS
+#> R version 4.3.2 (2023-10-31)
+#> Platform: x86_64-apple-darwin20 (64-bit)
+#> Running under: macOS Sonoma 14.5
 #> 
 #> Matrix products: default
-#> BLAS:   /usr/lib/x86_64-linux-gnu/openblas/libblas.so.3
-#> LAPACK: /usr/lib/x86_64-linux-gnu/libopenblasp-r0.2.20.so
+#> BLAS:   /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRblas.0.dylib 
+#> LAPACK: /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
 #> 
 #> locale:
-#>  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
-#>  [3] LC_TIME=de_DE.UTF-8        LC_COLLATE=en_US.UTF-8    
-#>  [5] LC_MONETARY=de_DE.UTF-8    LC_MESSAGES=en_US.UTF-8   
-#>  [7] LC_PAPER=de_DE.UTF-8       LC_NAME=C                 
-#>  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-#> [11] LC_MEASUREMENT=de_DE.UTF-8 LC_IDENTIFICATION=C       
+#> [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+#> 
+#> time zone: Europe/Berlin
+#> tzcode source: internal
 #> 
 #> attached base packages:
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#>  [1] ggupset_0.3.0.9001 forcats_0.4.0      stringr_1.4.0      dplyr_1.0.7       
-#>  [5] purrr_0.3.4        readr_1.3.1        tidyr_1.1.3        tibble_3.1.4      
-#>  [9] tidyverse_1.2.1    ggplot2_3.3.5     
+#>  [1] ggupset_0.4.0   lubridate_1.9.3 forcats_1.0.0   stringr_1.5.1  
+#>  [5] dplyr_1.1.4     purrr_1.0.2     readr_2.1.5     tidyr_1.3.1    
+#>  [9] tibble_3.2.1    tidyverse_2.0.0 ggplot2_3.5.1  
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] tidyselect_1.1.1  xfun_0.25         splines_3.6.2     haven_2.1.0      
-#>  [5] lattice_0.20-38   colorspace_1.4-1  vctrs_0.3.8       generics_0.0.2   
-#>  [9] viridisLite_0.3.0 htmltools_0.3.6   mgcv_1.8-31       yaml_2.2.0       
-#> [13] utf8_1.1.4        rlang_0.4.11      pillar_1.6.2      glue_1.4.2       
-#> [17] withr_2.4.2       DBI_1.0.0         modelr_0.1.4      readxl_1.3.1     
-#> [21] plyr_1.8.4        lifecycle_1.0.0   munsell_0.5.0     gtable_0.3.0     
-#> [25] cellranger_1.1.0  rvest_0.3.3       evaluate_0.13     UpSetR_1.3.3     
-#> [29] labeling_0.3      knitr_1.33        fansi_0.4.0       highr_0.8        
-#> [33] broom_0.5.2       Rcpp_1.0.1        scales_1.0.0      backports_1.1.4  
-#> [37] jsonlite_1.6      gridExtra_2.3     hms_0.4.2         digest_0.6.18    
-#> [41] stringi_1.4.3     grid_3.6.2        cli_3.0.1         tools_3.6.2      
-#> [45] magrittr_1.5      crayon_1.3.4      pkgconfig_2.0.2   Matrix_1.2-18    
-#> [49] ellipsis_0.3.2    xml2_1.2.0        lubridate_1.7.4   rmarkdown_2.10   
-#> [53] httr_1.4.2        rstudioapi_0.13   R6_2.4.0          nlme_3.1-143     
-#> [57] compiler_3.6.2
+#>  [1] utf8_1.2.4        generics_0.1.3    lattice_0.22-5    stringi_1.8.3    
+#>  [5] hms_1.1.3         digest_0.6.34     magrittr_2.0.3    evaluate_0.23    
+#>  [9] grid_4.3.2        timechange_0.3.0  fastmap_1.1.1     Matrix_1.6-5     
+#> [13] plyr_1.8.9        gridExtra_2.3     mgcv_1.9-1        fansi_1.0.6      
+#> [17] viridisLite_0.4.2 scales_1.3.0      UpSetR_1.4.0      textshaping_0.3.7
+#> [21] cli_3.6.2         rlang_1.1.3       munsell_0.5.0     splines_4.3.2    
+#> [25] withr_3.0.0       yaml_2.3.8        tools_4.3.2       tzdb_0.4.0       
+#> [29] colorspace_2.1-0  vctrs_0.6.5       R6_2.5.1          lifecycle_1.0.4  
+#> [33] ragg_1.2.7        pkgconfig_2.0.3   pillar_1.9.0      gtable_0.3.4     
+#> [37] glue_1.7.0        Rcpp_1.0.12       systemfonts_1.0.5 xfun_0.42        
+#> [41] tidyselect_1.2.0  highr_0.10        rstudioapi_0.15.0 knitr_1.45       
+#> [45] farver_2.1.1      nlme_3.1-164      htmltools_0.5.7   rmarkdown_2.25   
+#> [49] labeling_0.4.3    compiler_4.3.2
 ```
