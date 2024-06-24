@@ -1,6 +1,10 @@
 
-# Development version (v0.3.0.900x)
+# Development version (v0.4.0.900x)
 
+# v0.4.0
+
+* Fixed incompatibility with ggplot2 version 3.5.1 which meant that `combmatrix` theme
+elements were ignored (#43)
 * New parameter `override_plotting_function` for `axis_combmatrix` that gives maximum
 flexibility to modify the combination matrix plot in any desired way.
 * Fix bug when remobing y-axis (`theme(axis.text.y = element_blank())`)
