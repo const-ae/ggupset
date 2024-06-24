@@ -15,6 +15,7 @@
     combmatrix.panel.striped_background.color.two = "#F7F7F7",
     combmatrix.panel.point.size = 3,
     combmatrix.panel.line.size = 1.2,
+    combmatrix.panel.line.color = "black",
     combmatrix.panel.point.color.fill = "black",
     combmatrix.panel.point.color.empty = "#E0E0E0",
     element_tree = list(
@@ -30,6 +31,7 @@
       combmatrix.panel.striped_background.color.two = ggplot2::el_def("character"),
       combmatrix.panel.point.size = ggplot2::el_def("numeric"),
       combmatrix.panel.line.size = ggplot2::el_def("numeric"),
+      combmatrix.panel.line.color = ggplot2::el_def("character"),
       combmatrix.panel.point.color.fill = ggplot2::el_def("character"),
       combmatrix.panel.point.color.empty = ggplot2::el_def("character")
     )
