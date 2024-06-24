@@ -1,7 +1,7 @@
 Package: ggupset
 Type: Package
 Title: Combination Matrix Axis for 'ggplot2' to Create 'UpSet' Plots
-Version: 0.4.0
+Version: 0.4.0.9000
 URL: https://github.com/const-ae/ggupset
 BugReports: https://github.com/const-ae/ggupset/issues
 Authors@R: person("Constantin", "Ahlmann-Eltze", email = "artjom31415@googlemail.com", 
