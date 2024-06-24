@@ -83,9 +83,11 @@ NULL
 #'   geom_bar() +
 #'     axis_combmatrix(sep = "_", override_plotting_function = function(df){
 #'       ggplot(df, aes(x= at, y= single_label)) +
-#'         geom_rect(aes(fill= index %% 2 == 0), ymin=df$index-0.5, ymax=df$index+0.5, xmin=0, xmax=1) +
+#'         geom_rect(aes(fill= index %% 2 == 0), ymin=df$index-0.5,
+#'                   ymax=df$index+0.5, xmin=0, xmax=1) +
 #'         geom_point(aes(color= observed), size = 3) +
-#'         geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE], aes(group = labels), size= 1.2) +
+#'         geom_line(data= function(dat) dat[dat$observed, ,drop=FALSE],
+#'                   aes(group = labels), size= 1.2) +
 #'         ylab("") + xlab("") +
 #'         scale_x_continuous(limits = c(0, 1), expand = c(0, 0)) +
 #'         scale_fill_manual(values= c(`TRUE` = "white", `FALSE` = "#F7F7F7")) +
