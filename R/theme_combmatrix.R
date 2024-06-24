@@ -96,6 +96,6 @@ theme_combmatrix <- function(
     combmatrix.panel.point.color.fill = combmatrix.panel.point.color.fill,
     combmatrix.panel.point.color.empty = combmatrix.panel.point.color.empty,
     ...,
-    validate = FALSE
+    validate = TRUE
   )
 }
