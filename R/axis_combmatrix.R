@@ -217,12 +217,13 @@ render_comb_axis <- function(self, panel_params, axis=c("primary", "secondary"),
   )
 
   nticks <- length(at)
+  ticks_length <- calc_element(paste0("axis.ticks.length.x.", position), theme)
   ticks <- switch(position,
      top = element_render(theme, "axis.ticks.x.top", x = rep(at, each = 2),
-                          y = rep(unit.c(zero, theme$axis.ticks.length), nticks),
+                          y = rep(unit.c(zero, ticks_length), nticks),
                           id.lengths = rep(2, nticks)),
      bottom = element_render(theme, "axis.ticks.x.bottom", x = rep(at, each = 2),
-                             y = rep(unit.c(one - theme$axis.ticks.length, one), nticks),
+                             y = rep(unit.c(one - ticks_length, one), nticks),
                              id.lengths = rep(2, nticks))
   )
 
@@ -272,11 +273,11 @@ render_comb_axis <- function(self, panel_params, axis=c("primary", "secondary"),
 
   if(position == "bottom"){
     gt <- gtable_col("axis", grobs = list(ticks, axis_repl),
-                     width = one, heights = unit.c(theme$axis.ticks.length, label_height))
+                     width = one, heights = unit.c(ticks_length, label_height))
     justvp <- viewport(y = 1, just = "top", height = gtable_height(gt))
   }else{
     gt <- gtable_col("axis", grobs = list(axis_repl,ticks),
-                     width = one, heights = unit.c(label_height, theme$axis.ticks.length))
+                     width = one, heights = unit.c(label_height, ticks_length))
     justvp <-  viewport(y = 0, just = "bottom",    height = gtable_height(gt))
   }
 
