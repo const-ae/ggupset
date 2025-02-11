@@ -1,5 +1,10 @@
 
-# Development version (v0.4.0.900x)
+# Development version (v0.4.1.900x)
+
+# v0.4.1
+
+* Use `calc_element` internally instead of accessing values from the `theme` directly
+(thanks to @teunbrand, #44)
 
 # v0.4.0
 
